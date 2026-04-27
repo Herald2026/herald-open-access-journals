@@ -1,2 +1,29 @@
 <!DOCTYPE html>
-<html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Article Directory</title><style>body{font-family:Arial,sans-serif;max-width:1100px;margin:auto;padding:20px}input,select{padding:8px;margin:4px;width:100%}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5}tr:nth-child(even){background:#fafafa}</style></head><body><h1>Article Directory</h1><p id='count'>Loading...</p><input id='q' placeholder='Search title, author, journal'><table><thead><tr><th>Year</th><th>Title</th><th>Journal</th><th>Authors</th><th>DOI</th></tr></thead><tbody id='rows'></tbody></table><script>let data=[];fetch('articles.json').then(r=>r.json()).then(j=>{data=j;render(j);document.getElementById('count').textContent=j.length+' records';});function render(arr){const tb=document.getElementById('rows');tb.innerHTML=arr.map(x=>`<tr><td>${x.Year||''}</td><td><a href='${x.HTML_URL}' target='_blank'>${x.Title}</a></td><td>${x.Journal}</td><td>${x.Authors}</td><td>${x.DOI}</td></tr>`).join('');}document.getElementById('q').oninput=e=>{const v=e.target.value.toLowerCase();render(data.filter(x=>Object.values(x).join(' ').toLowerCase().includes(v)));};</script></body></html>
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>Herald Open Access Journals</title>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<header class='hero'>
+<h1>Herald Open Access Journals</h1>
+<p>Search 3929 scholarly article records</p>
+</header>
+<main class='container'>
+<div class='controls'>
+<input id='search' placeholder='Search title, author, journal...'>
+<select id='yearFilter'><option value=''>All Years</option></select>
+</div>
+<div id='count'></div>
+<table>
+<thead><tr><th>Year</th><th>Title</th><th>Journal</th><th>Authors</th><th>DOI</th></tr></thead>
+<tbody id='results'></tbody>
+</table>
+</main>
+<script src='search.js'></script>
+</body>
+</html>
+
