@@ -4,6 +4,44 @@
 <meta charset="UTF-8">
 <title>Articles</title>
 <link rel="stylesheet" href="style.css">
+
+<style>
+.layout {
+  display: flex;
+}
+
+/* LEFT PANEL */
+.year-panel {
+  width: 180px;
+  background: #f4f6f9;
+  padding: 15px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.year-btn {
+  display: block;
+  margin: 6px 0;
+  padding: 8px;
+  background: white;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.year-btn:hover {
+  background: #0b3d91;
+  color: white;
+}
+
+/* RIGHT CONTENT */
+.content {
+  flex: 1;
+  padding: 20px;
+}
+</style>
+
 </head>
 
 <body>
@@ -18,60 +56,110 @@
   </a>
 </header>
 
-<div id="articleContainer" class="journal-container"></div>
+<div class="layout">
+
+  <!-- YEAR SIDEBAR -->
+  <div class="year-panel">
+    <h3>Years</h3>
+    <div id="yearList"></div>
+  </div>
+
+  <!-- ARTICLES -->
+  <div class="content">
+    <div id="articleContainer" class="journal-container"></div>
+  </div>
+
+</div>
 
 <script>
-const journal = (localStorage.getItem("selectedJournal") || "").trim();
 
+const journal = (localStorage.getItem("selectedJournal") || "").trim();
 document.getElementById("journalTitle").innerText = journal;
+
+let allArticles = [];
 
 fetch('data.json?nocache=' + new Date().getTime())
   .then(res => res.json())
   .then(data => {
 
-    const container = document.getElementById("articleContainer");
-
-    // STEP 1: FILTER (safe match)
-    let filtered = data.filter(item =>
-      (item.Journal || "").trim() === journal
+    // FILTER JOURNAL (SAFE MATCH)
+    allArticles = data.filter(item =>
+      (item.Journal || "").trim().toLowerCase() === journal.toLowerCase()
     );
 
-    console.log("Selected Journal:", journal);
-    console.log("Articles Found:", filtered.length);
+    // SORT BY YEAR DESC
+    allArticles.sort((a, b) => b.Year - a.Year);
 
-    // STEP 2: SORT BY YEAR (LATEST FIRST)
-    filtered.sort((a, b) => b.Year - a.Year);
+    console.log("Articles Found:", allArticles.length);
 
-    // STEP 3: NO DATA CASE
-    if (filtered.length === 0) {
-      container.innerHTML = "<p>No articles found.</p>";
-      return;
-    }
-
-    // STEP 4: RENDER PREVIEW
-    filtered.forEach(a => {
-
-      const div = document.createElement("div");
-      div.className = "journal-card";
-
-      div.innerHTML = `
-        <h3>${a.Title}</h3>
-        <p><b>Year:</b> ${a.Year}</p>
-        <p><b>Authors:</b> ${a.Authors}</p>
-        <p><b>DOI:</b> ${a.DOI}</p>
-
-        <a href="${a.HTML_URL}" target="_blank">
-          🔗 Open Full Article
-        </a>
-      `;
-
-      container.appendChild(div);
-    });
-
-  })
-  .catch(err => {
-    console.error("Error loading data:", err);
+    buildYearSidebar(allArticles);
+    renderArticles(allArticles);
   });
+
+// --------------------
+// BUILD YEAR BUTTONS
+// --------------------
+function buildYearSidebar(data) {
+
+  const yearList = document.getElementById("yearList");
+
+  const years = [...new Set(data.map(a => a.Year))].sort((a, b) => b - a);
+
+  let html = `
+    <button class="year-btn" onclick="renderArticles(allArticles)">
+      All Years
+    </button>
+  `;
+
+  years.forEach(year => {
+    html += `
+      <button class="year-btn" onclick="filterYear(${year})">
+        ${year}
+      </button>
+    `;
+  });
+
+  yearList.innerHTML = html;
+}
+
+// --------------------
+// FILTER BY YEAR
+// --------------------
+function filterYear(year) {
+  const filtered = allArticles.filter(a => a.Year === year);
+  renderArticles(filtered);
+}
+
+// --------------------
+// RENDER ARTICLES
+// --------------------
+function renderArticles(list) {
+
+  const container = document.getElementById("articleContainer");
+  container.innerHTML = "";
+
+  if (!list.length) {
+    container.innerHTML = "<p>No articles found.</p>";
+    return;
+  }
+
+  list.forEach(a => {
+
+    const div = document.createElement("div");
+    div.className = "journal-card";
+
+    div.innerHTML = `
+      <h3>${a.Title}</h3>
+      <p><b>Year:</b> ${a.Year}</p>
+      <p><b>Authors:</b> ${a.Authors}</p>
+      <p><b>DOI:</b> ${a.DOI}</p>
+      <a href="${a.HTML_URL}" target="_blank">🔗 Open Article</a>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
 </script>
 
 </body>
