@@ -1,21 +1,32 @@
-fetch('data.json')
+fetch('data.json?nocache=' + new Date().getTime())
   .then(res => res.json())
   .then(data => {
 
     const container = document.getElementById("journalContainer");
 
-    // use correct field: "Journal"
-    const journals = [...new Set(data.map(item => item.Journal))];
+    // STEP 1: count articles per journal
+    const journalCount = {};
 
-    console.log("Total Journals:", journals.length);
+    data.forEach(item => {
+      const j = item.Journal;
+      journalCount[j] = (journalCount[j] || 0) + 1;
+    });
 
-    journals.forEach(journal => {
+    // STEP 2: convert to array for sorting
+    const sortedJournals = Object.entries(journalCount)
+      .sort((a, b) => b[1] - a[1]); // DESC order
+
+    console.log("Ranked Journals:", sortedJournals);
+
+    // STEP 3: display
+    sortedJournals.forEach(([journal, count]) => {
 
       const card = document.createElement("div");
       card.className = "journal-card";
 
       card.innerHTML = `
         <h3>${journal}</h3>
+        <p><b>Articles:</b> ${count}</p>
         <button onclick="openJournal('${journal}')">
           🔍 View Articles
         </button>
