@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Article</title>
+<style>
+body{font-family:Arial;max-width:900px;margin:auto;padding:40px;line-height:1.6}
+a.btn{display:inline-block;padding:10px 14px;background:#111;color:#fff;text-decoration:none;border-radius:8px}
+</style>
+</head>
+<body>
+
+<div id="content">Loading...</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const id = parseInt(params.get("id") || "0");
+
+fetch("articles.json")
+.then(r => r.json())
+.then(data => {
+  const a = data[id];
+  if(!a){ document.getElementById("content").innerHTML="Article not found"; return; }
+
+  document.title = a.Title || "Article";
+
+  document.getElementById("content").innerHTML = `
+    <h1>${a.Title || ""}</h1>
+    <p><b>Authors:</b> ${a.Authors || ""}</p>
+    <p><b>Journal:</b> ${a.Journal || ""}</p>
+    <p><b>Year:</b> ${a.Year || ""}</p>
+    <p><b>DOI:</b> <a target="_blank" href="https://doi.org/${a.DOI || ""}">${a.DOI || ""}</a></p>
+    <p><a class="btn" href="index.html">← Back Home</a></p>
+  `;
+});
+</script>
+
+</body>
+</html>
