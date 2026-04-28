@@ -9,13 +9,21 @@
 <body>
 
 <header>
-  <h1>Herald Open Access Journals</h1>
-  <p>Search scholarly articles, journals, DOI records and metadata</p>
+<h1>Herald Open Access Journals</h1>
+<p>Search scholarly articles, journals, DOI records and metadata</p>
 </header>
 
 <section class="search-box">
-  <input type="text" id="search" placeholder="Search title, author, journal, DOI...">
-  <div id="count">Loading records...</div>
+<input type="text" id="search" placeholder="Search title, author, journal, DOI...">
+
+<div class="toolbar">
+<div id="count">Loading...</div>
+
+<div class="views">
+<button onclick="setView('card')">Card View</button>
+<button onclick="setView('table')">Table View</button>
+</div>
+</div>
 </section>
 
 <section id="results"></section>
