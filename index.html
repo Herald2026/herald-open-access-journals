@@ -1,49 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Herald Open Access Journals Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Herald Open Access Journals</title>
+
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <header>
-<h1>Herald Open Access Journals</h1>
-<p>Search scholarly articles, journals, DOI records and metadata</p>
-</header>
-
-<header>
   <h1>Herald Open Access Journals</h1>
-  <p>Browse scholarly journals, articles, and DOI records</p>
+  <p>Select a journal to search articles</p>
 </header>
 
-<section style="text-align:center;margin-top:40px;">
-  <a href="journals.html" style="
-    display:inline-block;
-    padding:15px 25px;
-    background:#1F4E79;
-    color:white;
-    text-decoration:none;
-    font-size:18px;
-    border-radius:8px;
-  ">
-    📚 Browse Journals
-  </a>
-</section>
+<div class="journal-container">
 
-<div class="toolbar">
-<div id="count">Loading...</div>
+  <div class="journal-card">
+    <h3>Journal of Nanotechnology Nanomedicine & Nanobiotechnology</h3>
+    <button>🔍 Search Articles</button>
+  </div>
 
-<div class="views">
-<button onclick="setView('card')">Card View</button>
-<button onclick="setView('table')">Table View</button>
+  <div class="journal-card">
+    <h3>Journal of AIDS Clinical Research & STDs</h3>
+    <button>🔍 Search Articles</button>
+  </div>
+
+  <div class="journal-card">
+    <h3>Journal of Allergy Disorders & Therapy</h3>
+    <button>🔍 Search Articles</button>
+  </div>
+
+  <div class="journal-card">
+    <h3>Journal of Cancer Science & Therapy</h3>
+    <button>🔍 Search Articles</button>
+  </div>
+
+  <div class="journal-card">
+    <h3>Journal of Clinical & Experimental Dermatology</h3>
+    <button>🔍 Search Articles</button>
+  </div>
+
+  <div class="journal-card">
+    <h3>Journal of Medical Research & Health Sciences</h3>
+    <button>🔍 Search Articles</button>
+  </div>
+
 </div>
-</div>
-</section>
 
-<section id="results"></section>
-
-<script src="search.js"></script>
 </body>
 </html>
