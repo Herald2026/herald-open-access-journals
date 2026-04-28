@@ -4,10 +4,10 @@ fetch('data.json')
 
     const container = document.getElementById("journalContainer");
 
-    // IMPORTANT: use "journal" field (NOT name)
-    const journals = [...new Set(data.map(item => item.journal))];
+    // use correct field: "Journal"
+    const journals = [...new Set(data.map(item => item.Journal))];
 
-    console.log("Loaded journals:", journals.length);
+    console.log("Total Journals:", journals.length);
 
     journals.forEach(journal => {
 
@@ -24,8 +24,7 @@ fetch('data.json')
       container.appendChild(card);
     });
 
-  })
-  .catch(err => console.error("Error loading data:", err));
+  });
 
 function openJournal(journal) {
   localStorage.setItem("selectedJournal", journal);
