@@ -24,4 +24,4 @@ jobs:
             \"message\": \"update data.json\",
             \"content\": \"$CONTENT\"
           }" \
-          https://api.github.com/repos/Herald2026austinb/herald-scholar-publisher/contents/data.json
+          https://api.github.com/repos/Herald2026/herald-scholar-publisher/contents/data.json
