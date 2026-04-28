@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Journal Articles</title>
+<title>Articles</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -11,8 +11,7 @@
 <header>
   <h1 id="journalTitle">Journal Articles</h1>
 
-  <!-- SAME STYLISH BUTTON -->
-  <a class="submit-btn" href="https://your-link-here.com" target="_blank">
+  <a class="submit-btn" href="https://www.heraldopenaccess.us/submit-manuscript" target="_blank">
     📄 Submit Manuscript
   </a>
 </header>
@@ -23,19 +22,19 @@
 const journal = localStorage.getItem("selectedJournal");
 document.getElementById("journalTitle").innerText = journal;
 
-// 🔥 SAMPLE ARTICLES (you will later connect DOI dataset here)
+// 🔥 SAMPLE ARTICLES (replace later with your DOI dataset)
 const articles = [
   {
-    title: "Sample Research Article 1",
+    title: "Sample Research Paper 1",
     authors: "Author A",
     year: 2024,
-    doi: "10.0000/sample1"
+    doi: "10.1000/sample1"
   },
   {
-    title: "Sample Research Article 2",
+    title: "Sample Research Paper 2",
     authors: "Author B",
     year: 2025,
-    doi: "10.0000/sample2"
+    doi: "10.1000/sample2"
   }
 ];
 
