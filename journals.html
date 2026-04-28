@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Herald Journals</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Herald Open Access Journals</h1>
+<p>Select a journal to search articles</p>
+
+<div class="journal-list">
+
+  <div class="journal-card">
+    <h3>Journal of Nanotechnology Nanomedicine & Nanobiotechnology</h3>
+    <button onclick="openJournal('Journal of Nanotechnology Nanomedicine & Nanobiotechnology')">
+      🔍 Search Articles
+    </button>
+  </div>
+
+  <div class="journal-card">
+    <h3>Journal of AIDS Clinical Research & STDs</h3>
+    <button onclick="openJournal('Journal of AIDS Clinical Research & STDs')">
+      🔍 Search Articles
+    </button>
+  </div>
+
+  <div class="journal-card">
+    <h3>Journal of Allergy Disorders & Therapy</h3>
+    <button onclick="openJournal('Journal of Allergy Disorders & Therapy')">
+      🔍 Search Articles
+    </button>
+  </div>
+
+</div>
+
+<script>
+function openJournal(journal) {
+    window.location.href = "search.html?journal=" + encodeURIComponent(journal);
+}
+</script>
+
+</body>
+</html>
