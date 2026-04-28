@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Journal Search</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2 id="title">Loading Journal...</h2>
+<input type="text" id="search" placeholder="Search articles...">
+
+<div id="results"></div>
+
+<script src="articles.json"></script>
+<script>
+let allData = [];
+
+fetch("articles.json")
+.then(r => r.json())
+.then(data => {
+    allData = data;
+
+    const params = new URLSearchParams(window.location.search);
+    const journal = params.get("journal");
+
+    document.getElementById("title").innerText = journal;
+
+    let filtered = allData.filter(a => a.Journal === journal);
+
+    show(filtered);
+
+    document.getElementById("search").addEventListener("input", function(){
+        let q = this.value.toLowerCase();
+
+        let f = filtered.filter(a =>
+            a.Title.toLowerCase().includes(q) ||
+            a.Authors.toLowerCase().includes(q) ||
+            a.DOI.toLowerCase().includes(q)
+        );
+
+        show(f);
+    });
+});
+
+function show(rows){
+    let html = "";
+
+    rows.forEach(a => {
+        html += `
+        <div class="card">
+            <h3>${a.Title}</h3>
+            <p>${a.Authors}</p>
+            <p>${a.Year}</p>
+            <a href="article.html?id=${a.DOI}">Open Article</a>
+        </div>`;
+    });
+
+    document.getElementById("results").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
