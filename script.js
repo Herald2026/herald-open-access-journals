@@ -4,10 +4,10 @@ fetch('data.json')
 
     const container = document.getElementById("journalContainer");
 
-    // extract unique journals
+    // IMPORTANT: use "journal" field (NOT name)
     const journals = [...new Set(data.map(item => item.journal))];
 
-    console.log("Total Journals Loaded:", journals.length);
+    console.log("Loaded journals:", journals.length);
 
     journals.forEach(journal => {
 
