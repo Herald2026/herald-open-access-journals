@@ -27,18 +27,29 @@ fetch('data.json?nocache=' + new Date().getTime())
 
     const container = document.getElementById("journalContainer");
 
-    // extract unique journals safely
-    const journals = [...new Set(data.map(item =>
-      (item.Journal || "").trim().replace(/\s+/g, " ")
-    ))];
+    // STEP 1: COUNT ARTICLES PER JOURNAL
+    const journalCount = {};
 
-    journals.forEach(journal => {
+    data.forEach(item => {
+      const j = (item.Journal || "").trim();
+      journalCount[j] = (journalCount[j] || 0) + 1;
+    });
+
+    // STEP 2: SORT BY COUNT DESC
+    const sorted = Object.entries(journalCount)
+      .sort((a, b) => b[1] - a[1]);
+
+    console.log("Sorted Journals:", sorted);
+
+    // STEP 3: DISPLAY
+    sorted.forEach(([journal, count]) => {
 
       const card = document.createElement("div");
       card.className = "journal-card";
 
       card.innerHTML = `
         <h3>${journal}</h3>
+        <p><b>Articles:</b> ${count}</p>
         <button onclick="openJournal('${journal}')">
           🔍 View Articles
         </button>
@@ -50,11 +61,7 @@ fetch('data.json?nocache=' + new Date().getTime())
   });
 
 function openJournal(journal) {
-  localStorage.setItem(
-    "selectedJournal",
-    journal.trim().replace(/\s+/g, " ")
-  );
-
+  localStorage.setItem("selectedJournal", journal.trim());
   window.location.href = "article.html";
 }
 </script>
