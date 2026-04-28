@@ -1,49 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Herald Open Access Journals</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Herald Open Access Journals Portal</title>
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<header class="hero">
-    <h1>Herald Open Access Journals</h1>
-    <p>View Published Articles below</p>
+<header>
+  <h1>Herald Open Access Journals</h1>
+  <p>Search scholarly articles, journals, DOI records and metadata</p>
 </header>
 
-<main class="container">
+<section class="search-box">
+  <input type="text" id="search" placeholder="Search title, author, journal, DOI...">
+  <div id="count">Loading records...</div>
+</section>
 
-    <div class="controls">
-        <input id="search" placeholder="Search title, author, journal...">
-        <select id="yearFilter">
-            <option value="">All Years</option>
-        </select>
-    </div>
-
-    <div id="count"></div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Year</th>
-                <th>Title</th>
-                <th>Journal</th>
-                <th>Authors</th>
-                <th>DOI</th>
-            </tr>
-        </thead>
-
-        <tbody id="results"></tbody>
-    </table>
-
-</main>
+<section id="results"></section>
 
 <script src="search.js"></script>
-
 </body>
 </html>
-
