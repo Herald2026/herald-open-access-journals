@@ -10,18 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout dashboard repo
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Upload data.json to Scholar repo
+      - name: Upload data.json safely
         run: |
           CONTENT=$(base64 -w 0 data.json)
+
+          RESPONSE=$(curl -s -X GET \
+          -H "Authorization: token ${{ secrets.SCHOLAR_TOKEN }}" \
+          https://api.github.com/repos/Herald2026/herald-scholar-publisher/contents/data.json)
+
+          SHA=$(echo $RESPONSE | python3 -c "import sys, json; print(json.load(sys.stdin).get('sha',''))")
 
           curl -X PUT \
           -H "Authorization: token ${{ secrets.SCHOLAR_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d "{
             \"message\": \"update data.json\",
-            \"content\": \"$CONTENT\"
+            \"content\": \"$CONTENT\",
+            \"sha\": \"$SHA\"
           }" \
           https://api.github.com/repos/Herald2026/herald-scholar-publisher/contents/data.json
