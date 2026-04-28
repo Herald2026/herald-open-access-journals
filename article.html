@@ -22,18 +22,30 @@
 
 <script>
 const journal = localStorage.getItem("selectedJournal");
-document.getElementById("journalTitle").innerText = journal;
 
+// SAFE TITLE HANDLING
+document.getElementById("journalTitle").innerText =
+  journal ? journal : "Journal Articles";
+
+// LOAD DATA
 fetch('data.json')
   .then(res => res.json())
   .then(data => {
 
-    const filtered = data.filter(item => item.Journal === journal);
-
     const container = document.getElementById("articleContainer");
 
+    if (!journal) {
+      container.innerHTML = "<p>No journal selected.</p>";
+      return;
+    }
+
+    // SAFE MATCH (trim + case-safe)
+    const filtered = data.filter(item =>
+      (item.Journal || "").trim() === journal.trim()
+    );
+
     if (filtered.length === 0) {
-      container.innerHTML = "<p>No articles found.</p>";
+      container.innerHTML = "<p>No articles found for this journal.</p>";
       return;
     }
 
@@ -47,12 +59,21 @@ fetch('data.json')
         <p><b>Authors:</b> ${a.Authors}</p>
         <p><b>Year:</b> ${a.Year}</p>
         <p><b>DOI:</b> ${a.DOI}</p>
-        <p><a href="${a.HTML_URL}" target="_blank">🔗 Open Article</a></p>
+        <p>
+          <a href="${a.HTML_URL}" target="_blank">
+            🔗 Open Article
+          </a>
+        </p>
       `;
 
       container.appendChild(div);
     });
 
+  })
+  .catch(err => {
+    console.error("Error loading data.json:", err);
+    document.getElementById("articleContainer").innerHTML =
+      "<p>Error loading articles.</p>";
   });
 </script>
   
