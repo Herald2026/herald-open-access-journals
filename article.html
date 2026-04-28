@@ -23,58 +23,91 @@
 <script>
 const journal = localStorage.getItem("selectedJournal");
 
-// SAFE TITLE HANDLING
 document.getElementById("journalTitle").innerText =
   journal ? journal : "Journal Articles";
 
-// LOAD DATA
-fetch('data.json')
+let allArticles = [];
+
+// ONLY RUN AFTER PAGE LOAD (after click from index)
+fetch('data.json?nocache=' + new Date().getTime())
   .then(res => res.json())
   .then(data => {
 
-    const container = document.getElementById("articleContainer");
-
-    if (!journal) {
-      container.innerHTML = "<p>No journal selected.</p>";
-      return;
-    }
-
-    // SAFE MATCH (trim + case-safe)
-    const filtered = data.filter(item =>
-      (item.Journal || "").trim() === journal.trim()
+    // filter selected journal
+    allArticles = data.filter(item =>
+      (item.Journal || "").trim().toLowerCase() ===
+      (journal || "").trim().toLowerCase()
     );
 
-    if (filtered.length === 0) {
-      container.innerHTML = "<p>No articles found for this journal.</p>";
-      return;
-    }
+    // sort latest first
+    allArticles.sort((a, b) => b.Year - a.Year);
 
-    filtered.forEach(a => {
-
-      const div = document.createElement("div");
-      div.className = "journal-card";
-
-      div.innerHTML = `
-        <h3>${a.Title}</h3>
-        <p><b>Authors:</b> ${a.Authors}</p>
-        <p><b>Year:</b> ${a.Year}</p>
-        <p><b>DOI:</b> ${a.DOI}</p>
-        <p>
-          <a href="${a.HTML_URL}" target="_blank">
-            🔗 Open Article
-          </a>
-        </p>
-      `;
-
-      container.appendChild(div);
-    });
-
-  })
-  .catch(err => {
-    console.error("Error loading data.json:", err);
-    document.getElementById("articleContainer").innerHTML =
-      "<p>Error loading articles.</p>";
+    // build UI ONLY here (after click navigation)
+    buildYearSidebar(allArticles);
+    renderArticles(allArticles);
   });
+
+// --------------------
+// CREATE YEAR SIDEBAR
+// --------------------
+function buildYearSidebar(data) {
+
+  const yearList = document.getElementById("yearList");
+
+  const years = [...new Set(data.map(a => a.Year))].sort((a, b) => b - a);
+
+  yearList.innerHTML = `
+    <button class="year-btn" onclick="renderArticles(allArticles)">
+      All Years
+    </button>
+  `;
+
+  years.forEach(year => {
+    yearList.innerHTML += `
+      <button class="year-btn" onclick="filterByYear(${year})">
+        ${year}
+      </button>
+    `;
+  });
+}
+
+// --------------------
+// FILTER FUNCTION
+// --------------------
+function filterByYear(year) {
+  const filtered = allArticles.filter(a => a.Year === year);
+  renderArticles(filtered);
+}
+
+// --------------------
+// RENDER ARTICLES
+// --------------------
+function renderArticles(list) {
+
+  const container = document.getElementById("articleContainer");
+  container.innerHTML = "";
+
+  if (!list.length) {
+    container.innerHTML = "<p>No articles found.</p>";
+    return;
+  }
+
+  list.forEach(a => {
+
+    const div = document.createElement("div");
+    div.className = "journal-card";
+
+    div.innerHTML = `
+      <h3>${a.Title}</h3>
+      <p><b>Year:</b> ${a.Year}</p>
+      <p><b>Authors:</b> ${a.Authors}</p>
+      <p><b>DOI:</b> ${a.DOI}</p>
+      <p><a href="${a.HTML_URL}" target="_blank">🔗 Open Article</a></p>
+    `;
+
+    container.appendChild(div);
+  });
+}
 </script>
   
 </body>
