@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Herald Open Access Journals</title>
+<title>Herald Journals</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -11,18 +11,53 @@
 <header>
   <h1>Herald Open Access Journals</h1>
 
-  <!-- SUBMIT MANUSCRIPT BUTTON -->
   <a class="submit-btn"
      href="https://www.heraldopenaccess.us/submit-manuscript"
      target="_blank">
-     📄 Submit Manuscript
+    📄 Submit Manuscript
   </a>
 </header>
 
-<!-- JOURNAL LIST AUTO LOAD -->
 <div id="journalContainer" class="journal-container"></div>
 
-<script src="script.js"></script>
+<script>
+fetch('data.json?nocache=' + new Date().getTime())
+  .then(res => res.json())
+  .then(data => {
+
+    const container = document.getElementById("journalContainer");
+
+    // extract unique journals safely
+    const journals = [...new Set(data.map(item =>
+      (item.Journal || "").trim().replace(/\s+/g, " ")
+    ))];
+
+    journals.forEach(journal => {
+
+      const card = document.createElement("div");
+      card.className = "journal-card";
+
+      card.innerHTML = `
+        <h3>${journal}</h3>
+        <button onclick="openJournal('${journal}')">
+          🔍 View Articles
+        </button>
+      `;
+
+      container.appendChild(card);
+    });
+
+  });
+
+function openJournal(journal) {
+  localStorage.setItem(
+    "selectedJournal",
+    journal.trim().replace(/\s+/g, " ")
+  );
+
+  window.location.href = "article.html";
+}
+</script>
 
 </body>
 </html>
