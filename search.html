@@ -8,51 +8,79 @@
 <body>
 
 <h2 id="title">Loading Journal...</h2>
+
 <input type="text" id="search" placeholder="Search articles...">
 
 <div id="results"></div>
 
-<script src="articles.json"></script>
 <script>
 let allData = [];
+let filteredByJournal = [];
 
+/* =====================
+   LOAD DATA
+===================== */
 fetch("articles.json")
 .then(r => r.json())
 .then(data => {
     allData = data;
 
     const params = new URLSearchParams(window.location.search);
-    const journal = params.get("journal");
+    const journal = params.get("journal") || "";
 
-    document.getElementById("title").innerText = journal;
+    document.getElementById("title").innerText = journal || "All Journals";
 
-    let filtered = allData.filter(a => a.Journal === journal);
+    /* FIX: case-insensitive journal match */
+    filteredByJournal = journal
+        ? allData.filter(a =>
+            (a.Journal || "").toLowerCase() === journal.toLowerCase()
+          )
+        : allData;
 
-    show(filtered);
+    show(filteredByJournal);
 
-    document.getElementById("search").addEventListener("input", function(){
-        let q = this.value.toLowerCase();
+    /* =====================
+       SEARCH
+    ===================== */
+    document.getElementById("search").addEventListener("input", function () {
+        let q = this.value.toLowerCase().trim();
 
-        let f = filtered.filter(a =>
-            a.Title.toLowerCase().includes(q) ||
-            a.Authors.toLowerCase().includes(q) ||
-            a.DOI.toLowerCase().includes(q)
-        );
+        let result = filteredByJournal.filter(a => {
+            return (
+                (a.Title || "").toLowerCase().includes(q) ||
+                (a.Authors || "").toLowerCase().includes(q) ||
+                (a.DOI || "").toLowerCase().includes(q) ||
+                String(a.Year || "").includes(q)
+            );
+        });
 
-        show(f);
+        show(result);
     });
 });
 
-function show(rows){
+/* =====================
+   RENDER FUNCTION
+===================== */
+function show(rows) {
     let html = "";
+
+    if (!rows.length) {
+        document.getElementById("results").innerHTML =
+            "<p>No articles found</p>";
+        return;
+    }
 
     rows.forEach(a => {
         html += `
         <div class="card">
-            <h3>${a.Title}</h3>
-            <p>${a.Authors}</p>
-            <p>${a.Year}</p>
-            <a href="article.html?id=${a.DOI}">Open Article</a>
+            <h3>${a.Title || "No Title"}</h3>
+            <p><b>Authors:</b> ${a.Authors || "N/A"}</p>
+            <p><b>Year:</b> ${a.Year || "N/A"}</p>
+            <p><b>Journal:</b> ${a.Journal || "N/A"}</p>
+
+            <a href="article.html?id=${encodeURIComponent(a.id || a.DOI)}">
+                Open Article
+            </a>
         </div>`;
     });
 
