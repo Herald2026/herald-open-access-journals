@@ -2,38 +2,135 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Article</title>
-<style>
-body{font-family:Arial;max-width:900px;margin:auto;padding:40px;line-height:1.6}
-a.btn{display:inline-block;padding:10px 14px;background:#111;color:#fff;text-decoration:none;border-radius:8px}
-</style>
+
+<meta name="description" content="">
+<meta name="robots" content="index, follow">
+
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div id="content">Loading...</div>
+<div id="content">
+  <h2>Loading article...</h2>
+</div>
+
+<!-- 🔥 CITATION BOX -->
+<div class="citation-box" style="display:none;">
+  <h3>Cite This Article</h3>
+
+  <button onclick="copyAPA()">Copy APA</button>
+  <button onclick="copyMLA()">Copy MLA</button>
+  <button onclick="copyBibtex()">Copy BibTeX</button>
+
+  <pre id="citationOutput"></pre>
+</div>
 
 <script>
+let currentArticle = null;
+
 const params = new URLSearchParams(window.location.search);
-const id = parseInt(params.get("id") || "0");
+const id = params.get("id");
 
 fetch("articles.json")
-.then(r => r.json())
-.then(data => {
-  const a = data[id];
-  if(!a){ document.getElementById("content").innerHTML="Article not found"; return; }
+  .then(res => res.json())
+  .then(data => {
 
-  document.title = a.Title || "Article";
+    const article = data.find(a =>
+      (a.id === id) || (a.DOI === id)
+    );
 
-  document.getElementById("content").innerHTML = `
-    <h1>${a.Title || ""}</h1>
-    <p><b>Authors:</b> ${a.Authors || ""}</p>
-    <p><b>Journal:</b> ${a.Journal || ""}</p>
-    <p><b>Year:</b> ${a.Year || ""}</p>
-    <p><b>DOI:</b> <a target="_blank" href="https://doi.org/${a.DOI || ""}">${a.DOI || ""}</a></p>
-    <p><a class="btn" href="index.html">← Back Home</a></p>
-  `;
-});
+    if (!article) {
+      document.getElementById("content").innerHTML =
+        "<h2>Article not found</h2>";
+      return;
+    }
+
+    currentArticle = article;
+
+    /* ================= SEO ================= */
+    document.title = article.Title || "Article";
+
+    document.querySelector("meta[name='description']")
+      .setAttribute(
+        "content",
+        `${article.Title} | ${article.Journal} | ${article.Authors}`
+      );
+
+    /* ================= CONTENT ================= */
+    document.getElementById("content").innerHTML = `
+      <h1>${article.Title || ""}</h1>
+      <p><b>Authors:</b> ${article.Authors || ""}</p>
+      <p><b>Journal:</b> ${article.Journal || ""}</p>
+      <p><b>Year:</b> ${article.Year || ""}</p>
+
+      ${
+        article.DOI
+        ? `<p><b>DOI:</b>
+            <a target="_blank" href="https://doi.org/${article.DOI}">
+              ${article.DOI}
+            </a>
+          </p>`
+        : ""
+      }
+    `;
+
+    generateCitations(article);
+
+    document.querySelector(".citation-box").style.display = "block";
+  });
+
+/* ================= CITATION GENERATOR ================= */
+function generateCitations(a){
+
+  const title = a.Title || "";
+  const authors = a.Authors || "";
+  const journal = a.Journal || "";
+  const year = a.Year || "";
+  const doi = a.DOI || "";
+
+  const apa = `${authors} (${year}). ${title}. ${journal}. https://doi.org/${doi}`;
+  const mla = `${authors}. "${title}." ${journal}, ${year}.`;
+  const bibtex = `@article{ref,
+  title={${title}},
+  author={${authors}},
+  journal={${journal}},
+  year={${year}},
+  doi={${doi}}
+}`;
+
+  document.getElementById("citationOutput").innerText =
+`APA:
+${apa}
+
+MLA:
+${mla}
+
+BibTeX:
+${bibtex}`;
+}
+
+/* ================= COPY FUNCTIONS ================= */
+function copyAPA(){
+  const text = document.getElementById("citationOutput").innerText.split("MLA:")[0];
+  navigator.clipboard.writeText(text);
+  alert("APA copied");
+}
+
+function copyMLA(){
+  const text = document.getElementById("citationOutput").innerText;
+  const mla = text.split("MLA:")[1].split("BibTeX:")[0];
+  navigator.clipboard.writeText(mla.trim());
+  alert("MLA copied");
+}
+
+function copyBibtex(){
+  const text = document.getElementById("citationOutput").innerText;
+  const bib = text.split("BibTeX:")[1];
+  navigator.clipboard.writeText(bib.trim());
+  alert("BibTeX copied");
+}
 </script>
 
 </body>
