@@ -1,1 +1,43 @@
-let rows=[];const results=document.getElementById('results');const count=document.getElementById('count');const q=document.getElementById('search');const yf=document.getElementById('yearFilter');fetch('articles.json').then(r=>r.json()).then(data=>{rows=data;const years=[...new Set(rows.map(x=>x.Year).filter(Boolean))].sort();years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;yf.appendChild(o)});render(rows);});function render(arr){count.textContent=arr.length+' records';results.innerHTML=arr.map(x=>`<tr><td>${x.Year||''}</td><td><a href='${x.HTML_URL}' target='_blank'>${x.Title}</a></td><td>${x.Journal||''}</td><td>${x.Authors||''}</td><td>${x.DOI||''}</td></tr>`).join('');}function filter(){const s=q.value.toLowerCase();const y=yf.value;render(rows.filter(x=>(!y||String(x.Year)===y)&&Object.values(x).join(' ').toLowerCase().includes(s)));}q.oninput=filter;yf.onchange=filter;
+let allData = [];
+
+fetch("articles.json")
+.then(r => r.json())
+.then(data => {
+  allData = data;
+  document.getElementById("count").innerText =
+    data.length + " Articles Indexed";
+  show(data);
+});
+
+document.getElementById("search").addEventListener("input", function(){
+  const q = this.value.toLowerCase();
+
+  const filtered = allData.filter((a,i)=>
+    (a.Title||"").toLowerCase().includes(q) ||
+    (a.Authors||"").toLowerCase().includes(q) ||
+    (a.Journal||"").toLowerCase().includes(q) ||
+    (a.DOI||"").toLowerCase().includes(q)
+  );
+
+  document.getElementById("count").innerText =
+    filtered.length + " Results Found";
+
+  show(filtered);
+});
+
+function show(rows){
+  let html = "";
+
+  rows.slice(0,100).forEach((a,i)=>{
+    html += `
+    <div class="card">
+      <h3>${a.Title||""}</h3>
+      <p><b>Authors:</b> ${a.Authors||""}</p>
+      <p><b>Journal:</b> ${a.Journal||""}</p>
+      <p><b>Year:</b> ${a.Year||""}</p>
+      <a class="btn" href="article.html?id=${i}">Open Record</a>
+    </div>`;
+  });
+
+  document.getElementById("results").innerHTML = html;
+}
