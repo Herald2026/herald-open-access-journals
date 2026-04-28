@@ -8,11 +8,11 @@ let currentView = "card";
 fetch("articles.json")
   .then(r => r.json())
   .then(data => {
-    allData = data;
-    currentRows = data;
+    allData = data || [];
+    currentRows = allData;
 
-    updateCount(`${data.length} Articles Indexed`);
-    show(data);
+    updateCount(`${allData.length} Articles Indexed`);
+    show(allData);
   })
   .catch(err => {
     console.error("Error loading JSON:", err);
@@ -23,15 +23,21 @@ fetch("articles.json")
    SEARCH
 ========================= */
 document.getElementById("search").addEventListener("input", function () {
-  const q = this.value.toLowerCase().trim();
+  const q = (this.value || "").toLowerCase().trim();
 
   currentRows = allData.filter(a => {
+    const title = (a.Title || "").toLowerCase();
+    const authors = (a.Authors || "").toLowerCase();
+    const journal = (a.Journal || "").toLowerCase();
+    const doi = (a.DOI || "").toLowerCase();
+    const year = String(a.Year || "");
+
     return (
-      (a.Title || "").toLowerCase().includes(q) ||
-      (a.Authors || "").toLowerCase().includes(q) ||
-      (a.Journal || "").toLowerCase().includes(q) ||
-      (String(a.Year || "")).includes(q) ||
-      (a.DOI || "").toLowerCase().includes(q)
+      title.includes(q) ||
+      authors.includes(q) ||
+      journal.includes(q) ||
+      doi.includes(q) ||
+      year.includes(q)
     );
   });
 
@@ -58,14 +64,21 @@ function setView(v) {
    MAIN RENDER FUNCTION
 ========================= */
 function show(rows) {
+  if (!rows) rows = [];
+
   let html = "";
 
+  const limit = 100;
+  const data = rows.slice(0, limit);
+
   if (currentView === "card") {
-    rows.slice(0, 100).forEach((a) => {
+    data.forEach((a) => {
+      const id = a.id || a.DOI || "";
+
       html += `
         <div class="card">
           <h3>
-            <a href="article.html?id=${encodeURIComponent(a.id)}">
+            <a href="article.html?id=${encodeURIComponent(id)}">
               ${a.Title || "No Title"}
             </a>
           </h3>
@@ -98,12 +111,14 @@ function show(rows) {
         </tr>
     `;
 
-    rows.slice(0, 100).forEach((a) => {
+    data.forEach((a) => {
+      const id = a.id || a.DOI || "";
+
       html += `
         <tr>
           <td>${a.Year || ""}</td>
           <td>
-            <a href="article.html?id=${encodeURIComponent(a.id)}">
+            <a href="article.html?id=${encodeURIComponent(id)}">
               ${a.Title || ""}
             </a>
           </td>
