@@ -13,10 +13,15 @@ jobs:
       - name: Checkout dashboard repo
         uses: actions/checkout@v4
 
-      - name: Copy data.json to Scholar repo
+      - name: Upload data.json to Scholar repo
         run: |
+          CONTENT=$(base64 -w 0 data.json)
+
           curl -X PUT \
           -H "Authorization: token ${{ secrets.SCHOLAR_TOKEN }}" \
           -H "Content-Type: application/json" \
-          --data @data.json \
+          -d "{
+            \"message\": \"update data.json\",
+            \"content\": \"$CONTENT\"
+          }" \
           https://api.github.com/repos/Herald2026austinb/herald-scholar-publisher/contents/data.json
