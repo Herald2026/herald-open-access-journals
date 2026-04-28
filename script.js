@@ -1,5 +1,5 @@
 fetch('journals.json')
-  .then(response => response.json())
+  .then(res => res.json())
   .then(data => {
     const container = document.getElementById("journalContainer");
 
@@ -9,14 +9,16 @@ fetch('journals.json')
 
       card.innerHTML = `
         <h3>${journal.name}</h3>
-        <button onclick="alert('Articles feature coming soon')">
-          🔍 Search Articles
+        <button onclick="openJournal('${journal.name}')">
+          🔍 View Articles
         </button>
       `;
 
       container.appendChild(card);
     });
-  })
-  .catch(error => {
-    console.error("Error loading journals:", error);
   });
+
+function openJournal(name) {
+  localStorage.setItem("selectedJournal", name);
+  window.location.href = "articles.html";
+}
