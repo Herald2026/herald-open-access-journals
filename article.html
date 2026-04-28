@@ -21,9 +21,7 @@
 <div id="articleContainer" class="journal-container"></div>
 
 <script>
-const journal = (localStorage.getItem("selectedJournal") || "")
-  .trim()
-  .replace(/\s+/g, " ");
+const journal = (localStorage.getItem("selectedJournal") || "").trim();
 
 document.getElementById("journalTitle").innerText = journal;
 
@@ -33,20 +31,24 @@ fetch('data.json?nocache=' + new Date().getTime())
 
     const container = document.getElementById("articleContainer");
 
-    const filtered = data.filter(item =>
-      (item.Journal || "")
-        .trim()
-        .replace(/\s+/g, " ") === journal
+    // STEP 1: FILTER (safe match)
+    let filtered = data.filter(item =>
+      (item.Journal || "").trim() === journal
     );
 
     console.log("Selected Journal:", journal);
-    console.log("Matched Articles:", filtered.length);
+    console.log("Articles Found:", filtered.length);
 
+    // STEP 2: SORT BY YEAR (LATEST FIRST)
+    filtered.sort((a, b) => b.Year - a.Year);
+
+    // STEP 3: NO DATA CASE
     if (filtered.length === 0) {
-      container.innerHTML = "<p>No articles found for this journal.</p>";
+      container.innerHTML = "<p>No articles found.</p>";
       return;
     }
 
+    // STEP 4: RENDER PREVIEW
     filtered.forEach(a => {
 
       const div = document.createElement("div");
@@ -54,10 +56,13 @@ fetch('data.json?nocache=' + new Date().getTime())
 
       div.innerHTML = `
         <h3>${a.Title}</h3>
-        <p><b>Authors:</b> ${a.Authors}</p>
         <p><b>Year:</b> ${a.Year}</p>
+        <p><b>Authors:</b> ${a.Authors}</p>
         <p><b>DOI:</b> ${a.DOI}</p>
-        <p><a href="${a.HTML_URL}" target="_blank">🔗 Open Article</a></p>
+
+        <a href="${a.HTML_URL}" target="_blank">
+          🔗 Open Full Article
+        </a>
       `;
 
       container.appendChild(div);
