@@ -2,8 +2,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Article</title>
+
+<title>Loading Article...</title>
+
 <link rel="stylesheet" href="style.css">
+
+<!-- =========================
+     SEO + SCHOLAR METADATA
+========================= -->
+<meta name="description" content="Academic article from Herald Open Access Journals">
+
+<meta name="citation_title" content="">
+<meta name="citation_author" content="">
+<meta name="citation_journal_title" content="">
+<meta name="citation_publication_date" content="">
+<meta name="citation_doi" content="">
+
 </head>
 
 <body>
@@ -18,6 +32,9 @@ fetch("articles.json")
   .then(json => {
     data = json;
     load();
+  })
+  .catch(err => {
+    document.getElementById("content").innerHTML = "Error loading article.";
   });
 
 function getId(){
@@ -29,29 +46,66 @@ function load(){
 
   const id = getId();
 
-  const article = data.find(a => (a.DOI || "").split("/").pop() === id);
+  const article = data.find(a =>
+    (a.DOI || "").split("/").pop() === id
+  );
 
   if(!article){
     document.body.innerHTML = "<h2>Article Not Found</h2>";
     return;
   }
 
-  document.title = article.Title;
+  // =========================
+  // SEO TITLE
+  // =========================
+  document.title = article.Title || "Article";
 
+  // =========================
+  // UPDATE SCHOLAR META TAGS
+  // =========================
+  setMeta("citation_title", article.Title);
+  setMeta("citation_author", article.Authors);
+  setMeta("citation_journal_title", article.Journal);
+  setMeta("citation_publication_date", article.Year);
+  setMeta("citation_doi", article.DOI);
+
+  // =========================
+  // RENDER CONTENT
+  // =========================
   document.getElementById("content").innerHTML = `
-    <h1>${article.Title}</h1>
+    <h1>${article.Title || ""}</h1>
 
-    <p><b>Authors:</b> ${article.Authors}</p>
-    <p><b>Journal:</b> ${article.Journal}</p>
-    <p><b>Year:</b> ${article.Year}</p>
-    <p><b>DOI:</b> ${article.DOI}</p>
+    <p><b>Authors:</b> ${article.Authors || ""}</p>
+    <p><b>Journal:</b> ${article.Journal || ""}</p>
+    <p><b>Year:</b> ${article.Year || ""}</p>
+    <p><b>DOI:</b> ${article.DOI || ""}</p>
 
     <hr>
 
-    <a href="https://doi.org/${article.DOI}" target="_blank">
-      🔗 Open DOI
-    </a>
+    <h3>Access Article</h3>
+
+    <p>
+      <a href="https://doi.org/${article.DOI}" target="_blank">
+        🔗 Open DOI
+      </a>
+    </p>
+
+    <p>
+      <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(article.Title)}" target="_blank">
+        📚 Search on Google Scholar
+      </a>
+    </p>
   `;
+}
+
+// =========================
+// META TAG UPDATER
+// =========================
+function setMeta(name, content){
+  let tag = document.querySelector(`meta[name="${name}"]`);
+  if(tag && content){
+    tag.setAttribute("content", content);
+  }
 }
 </script>
 
