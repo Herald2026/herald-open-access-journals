@@ -5,10 +5,13 @@
 <title>Herald Journals</title>
 
 <style>
+/* =========================
+   BASE
+========================= */
 body{
   margin:0;
-  font-family: Arial, sans-serif;
-  background:#f5f7fb;
+  font-family: "Georgia", "Times New Roman", serif;
+  background:#f7f8fc;
 }
 
 /* HEADER */
@@ -21,7 +24,8 @@ header{
 
 header h1{
   margin:0;
-  font-size:26px;
+  font-size:28px;
+  letter-spacing:0.5px;
 }
 
 /* CONTROLS */
@@ -38,69 +42,131 @@ header h1{
   padding:10px;
   border-radius:8px;
   border:1px solid #ccc;
+  font-family:inherit;
 }
 
 select{
   padding:10px;
   border-radius:8px;
+  font-family:inherit;
+}
+
+/* SECTIONS */
+.section-title{
+  padding:10px 25px 0;
+  font-size:18px;
+  font-weight:bold;
+  color:#333;
 }
 
 /* GRID */
 .container{
-  padding:25px;
+  padding:20px 25px;
   display:grid;
   grid-template-columns: repeat(3, 1fr);
-  gap:20px;
+  gap:18px;
 }
 
-/* CLEAN CARD */
+/* =========================
+   CARD DESIGN (ACADEMIC STYLE)
+========================= */
 .card{
   background:white;
-  border:1px solid #e2e6ef;
-  border-left:6px solid #0b3d91;
+  border-radius:12px;
   padding:18px;
-  border-radius:10px;
-  cursor:pointer;
+  border:1px solid #e5e8f0;
+  border-left:6px solid #0b3d91;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
   transition:0.2s;
-  min-height:120px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
 }
 
 .card:hover{
   transform:translateY(-4px);
-  box-shadow:0 6px 16px rgba(0,0,0,0.08);
+  box-shadow:0 6px 16px rgba(0,0,0,0.12);
 }
 
+/* LOGO (AUTO GENERATED) */
+.logo{
+  width:42px;
+  height:42px;
+  border-radius:8px;
+  background:#0b3d91;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  font-size:16px;
+  flex-shrink:0;
+}
+
+/* TEXT */
 .card h3{
-  margin:0 0 8px 0;
-  font-size:17px;
+  margin:0;
+  font-size:16px;
   color:#111;
 }
 
 .card p{
-  margin:0;
+  margin:4px 0;
   color:#555;
+  font-size:13px;
 }
 
 /* BUTTON */
 .card button{
-  margin-top:12px;
-  padding:8px 12px;
+  margin-top:10px;
+  padding:6px 10px;
   border:none;
   border-radius:6px;
   background:#0b3d91;
   color:white;
-  font-weight:bold;
   cursor:pointer;
+  font-family:inherit;
+}
+
+/* FEATURED / TRENDING BOX */
+.grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  padding:0 25px;
+}
+
+/* PRINT MODE */
+@media print{
+  header, .controls, button { display:none; }
+  body { background:white; }
+  .card { box-shadow:none; }
 }
 
 /* RESPONSIVE */
 @media(max-width:1000px){
   .container{ grid-template-columns:repeat(2,1fr); }
+  .grid-2{ grid-template-columns:1fr; }
 }
 
 @media(max-width:600px){
   .container{ grid-template-columns:1fr; }
 }
+
+/* LOADING FAST MODE */
+.skeleton{
+  height:80px;
+  background:#eaeef6;
+  border-radius:10px;
+  animation:pulse 1.2s infinite;
+}
+
+@keyframes pulse{
+  0%{opacity:0.6;}
+  50%{opacity:1;}
+  100%{opacity:0.6;}
+}
+
 </style>
 
 </head>
@@ -116,33 +182,59 @@ select{
   <input class="search" id="searchBox" placeholder="Search journals...">
 
   <select id="sortBox">
-    <option value="desc">Most Articles</option>
+    <option value="desc">Top Journals</option>
     <option value="asc">A - Z</option>
   </select>
 </div>
 
-<!-- GRID -->
+<!-- FEATURED + TRENDING -->
+<div class="grid-2">
+
+  <div>
+    <div class="section-title">🔥 Featured Journals</div>
+    <div id="featured"></div>
+  </div>
+
+  <div>
+    <div class="section-title">📈 Trending Journals</div>
+    <div id="trending"></div>
+  </div>
+
+</div>
+
+<!-- ALL JOURNALS -->
+<div class="section-title">📚 All Journals</div>
 <div class="container" id="journalContainer"></div>
 
 <script>
 
 let journals=[];
+let journalData=[];
+
 const container=document.getElementById("journalContainer");
 
-/* LOAD */
+/* FAST LOADING SKELETON */
+container.innerHTML=`
+  <div class="skeleton"></div>
+  <div class="skeleton"></div>
+  <div class="skeleton"></div>
+`;
+
+/* LOAD DATA */
 fetch("articles.json")
 .then(res=>res.json())
 .then(data=>{
 
-  const journalCount={};
+  const map={};
 
   data.forEach(a=>{
     const j=(a.Journal||"").trim();
     if(!j) return;
-    journalCount[j]=(journalCount[j]||0)+1;
+    map[j]=(map[j]||0)+1;
   });
 
-  journals=Object.entries(journalCount);
+  journals=Object.entries(map);
+  journalData=journals;
 
   render();
 });
@@ -157,7 +249,7 @@ function render(){
   let q=document.getElementById("searchBox").value.toLowerCase();
   let sort=document.getElementById("sortBox").value;
 
-  let list=journals.filter(j=>j[0].toLowerCase().includes(q));
+  let list=journalData.filter(j=>j[0].toLowerCase().includes(q));
 
   if(sort==="asc"){
     list.sort((a,b)=>a[0].localeCompare(b[0]));
@@ -165,25 +257,57 @@ function render(){
     list.sort((a,b)=>b[1]-a[1]);
   }
 
+  /* FEATURED (TOP 3) */
+  renderBox("featured", list.slice(0,3));
+
+  /* TRENDING (NEXT 3) */
+  renderBox("trending", list.slice(3,6));
+
+  /* ALL */
+  renderMain(list);
+}
+
+/* BOX RENDER */
+function renderBox(id,list){
+
+  const el=document.getElementById(id);
+  el.innerHTML="";
+
+  list.forEach(([j,c])=>{
+
+    el.innerHTML+=cardHTML(j,c);
+  });
+}
+
+/* MAIN */
+function renderMain(list){
+
   container.innerHTML="";
 
-  list.forEach(([journal,count])=>{
-
-    const div=document.createElement("div");
-    div.className="card";
-
-    div.innerHTML=`
-      <h3>${journal}</h3>
-      <p>${count} Articles</p>
-
-      <button onclick="openJournal('${journal.replace(/'/g,"")}' )">
-        View Journal
-      </button>
-    `;
-
-    container.appendChild(div);
+  list.forEach(([j,c])=>{
+    container.innerHTML+=cardHTML(j,c);
   });
+}
 
+/* CARD */
+function cardHTML(journal,count){
+
+  const logo = journal.charAt(0).toUpperCase();
+
+  return `
+    <div class="card">
+      <div class="logo">${logo}</div>
+
+      <div>
+        <h3>${journal}</h3>
+        <p>${count} Articles</p>
+
+        <button onclick="openJournal('${journal.replace(/'/g,"")}' )">
+          View Journal
+        </button>
+      </div>
+    </div>
+  `;
 }
 
 /* OPEN */
