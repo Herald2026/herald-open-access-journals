@@ -3,7 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <title>Herald Journals</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#f5f7fb;
+}
+
+/* HEADER */
+header{
+  background:#0b3d91;
+  color:white;
+  padding:25px;
+  text-align:center;
+}
+
+header h1{
+  margin:0;
+  font-size:26px;
+}
+
+/* GRID */
+.container{
+  padding:25px;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:20px;
+}
+
+/* JOURNAL CARD */
+.card{
+  padding:20px;
+  border-radius:14px;
+  color:white;
+  box-shadow:0 4px 12px rgba(0,0,0,0.12);
+  cursor:pointer;
+  transition:0.3s;
+  position:relative;
+  overflow:hidden;
+}
+
+/* COLOR VARIATIONS */
+.card:nth-child(5n+1){ background:#1e88e5; }
+.card:nth-child(5n+2){ background:#43a047; }
+.card:nth-child(5n+3){ background:#8e24aa; }
+.card:nth-child(5n+4){ background:#f4511e; }
+.card:nth-child(5n+5){ background:#3949ab; }
+
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 8px 20px rgba(0,0,0,0.25);
+}
+
+/* TITLE */
+.card h3{
+  margin:0 0 10px 0;
+  font-size:18px;
+}
+
+/* COUNT */
+.card p{
+  margin:0;
+  font-size:14px;
+  opacity:0.9;
+}
+
+/* BUTTON */
+.card button{
+  margin-top:15px;
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  background:white;
+  color:black;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* RESPONSIVE */
+@media(max-width:1000px){
+  .container{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(max-width:600px){
+  .container{
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
 </head>
 
 <body>
@@ -12,45 +103,50 @@
   <h1>Herald Open Access Journals</h1>
 </header>
 
-<div id="journalContainer"></div>
+<div class="container" id="journalContainer"></div>
 
 <script>
+
 fetch("articles.json")
-  .then(res => res.json())
-  .then(data => {
+.then(res=>res.json())
+.then(data=>{
 
-    const container = document.getElementById("journalContainer");
-    const journalCount = {};
+  const container=document.getElementById("journalContainer");
 
-    data.forEach(a => {
-      const j = (a.Journal || "").trim();
-      if (!j) return;
-      journalCount[j] = (journalCount[j] || 0) + 1;
-    });
+  const journalCount={};
 
-    Object.entries(journalCount)
-      .sort((a,b) => b[1] - a[1])
-      .forEach(([journal, count]) => {
-
-        const div = document.createElement("div");
-
-        div.innerHTML = `
-          <h3>${journal}</h3>
-          <p>${count} articles</p>
-          <button onclick="openJournal('${journal.replace(/'/g,"")}' )">
-            View Articles
-          </button>
-        `;
-
-        container.appendChild(div);
-      });
-
+  data.forEach(a=>{
+    const j=(a.Journal||"").trim();
+    if(!j) return;
+    journalCount[j]=(journalCount[j]||0)+1;
   });
 
+  Object.entries(journalCount)
+  .sort((a,b)=>b[1]-a[1])
+  .forEach(([journal,count])=>{
+
+    const div=document.createElement("div");
+    div.className="card";
+
+    div.innerHTML=`
+      <h3>${journal}</h3>
+      <p>${count} Articles</p>
+
+      <button onclick="openJournal('${journal.replace(/'/g,"")}' )">
+        View Journal →
+      </button>
+    `;
+
+    container.appendChild(div);
+  });
+
+});
+
 function openJournal(journal){
-  localStorage.setItem("journal", journal);
-  window.location.href = "journals.html";
+  localStorage.setItem("journal",journal);
+  window.location.href="journals.html";
 }
+
 </script>
 
 </body>
