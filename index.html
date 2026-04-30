@@ -24,8 +24,6 @@
 
 <div class="page">
 
-<input class="search" id="searchBox" placeholder="Search journals...">
-
 <div class="container" id="journalContainer"></div>
 
 </div>
@@ -45,26 +43,6 @@ fetch("articles.json")
   });
 
   render(Object.entries(map));
-
-});
-
-document.getElementById("searchBox").addEventListener("input",function(){
-
-  fetch("articles.json")
-  .then(r=>r.json())
-  .then(data=>{
-
-    const q=this.value.toLowerCase();
-    const map={};
-
-    data.forEach(a=>{
-      const j=(a.Journal||"").trim();
-      if(!j.toLowerCase().includes(q)) return;
-      map[j]=(map[j]||0)+1;
-    });
-
-    render(Object.entries(map));
-  });
 
 });
 
