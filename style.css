@@ -5,57 +5,74 @@ body{
   color:#222;
 }
 
-/* ================= HEADER ================= */
+/* GLOBAL PADDING */
+.page{
+  padding:20px 60px;
+}
+
+@media(max-width:900px){
+  .page{
+    padding:15px 20px;
+  }
+}
+
+/* HEADER */
 .global-header{
   background:#0b3d91;
   color:white;
-  padding:16px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
+  padding:15px 20px;
   position:sticky;
   top:0;
   z-index:1000;
 }
 
-.global-header .title{
+.header-inner{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+}
+
+.title{
   font-size:20px;
   font-weight:bold;
 }
 
-/* SUBMIT BUTTON */
 .submit-btn{
   background:#ffcc00;
   color:black;
-  padding:10px 14px;
+  padding:9px 14px;
   border-radius:8px;
   text-decoration:none;
   font-weight:bold;
 }
 
-/* ================= GRID ================= */
+/* GRID */
 .container{
-  padding:20px;
+  padding:20px 0;
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:18px;
 }
 
-/* ================= CARD ================= */
+/* CARD */
 .card{
-  background:white;
+  background:#ffffff;
   border-radius:12px;
   padding:18px;
-  border:1px solid #e3e7ef;
+  border:1px solid #d9e1ee;
   border-left:5px solid #0b3d91;
-  box-shadow:0 3px 10px rgba(0,0,0,0.06);
+  box-shadow:0 4px 10px rgba(0,0,0,0.06);
   transition:0.2s;
+  min-height:140px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 }
 
 .card:hover{
   transform:translateY(-3px);
-  box-shadow:0 8px 18px rgba(0,0,0,0.12);
+  box-shadow:0 10px 20px rgba(0,0,0,0.12);
 }
 
 /* BUTTON */
@@ -72,9 +89,43 @@ button{
 .search{
   width:100%;
   padding:10px;
-  margin:10px 0;
   border-radius:8px;
   border:1px solid #ccc;
+  margin:10px 0;
+}
+
+/* JOURNAL PAGE LAYOUT */
+.journal-layout{
+  display:grid;
+  grid-template-columns:220px 1fr;
+  gap:20px;
+}
+
+.year-box{
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  border:1px solid #d9e1ee;
+  height:fit-content;
+}
+
+.year-box button{
+  width:100%;
+  margin:6px 0;
+}
+
+/* ARTICLE PAGE */
+.article-box{
+  max-width:800px;
+  margin:auto;
+}
+
+.article-card{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  border:1px solid #d9e1ee;
+  box-shadow:0 4px 10px rgba(0,0,0,0.06);
 }
 
 /* RESPONSIVE */
@@ -82,6 +133,7 @@ button{
   .container{ grid-template-columns:repeat(2,1fr); }
 }
 
-@media(max-width:600px){
+@media(max-width:700px){
   .container{ grid-template-columns:1fr; }
+  .journal-layout{ grid-template-columns:1fr; }
 }
