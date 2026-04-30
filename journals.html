@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Journal Articles</title>
+<title>Journal</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -29,7 +29,7 @@
     <div id="years"></div>
   </div>
 
-  <div id="articles"></div>
+  <div class="container" id="articles"></div>
 
 </div>
 
@@ -58,6 +58,7 @@ function buildYears(){
   const years=[...new Set(all.map(a=>a.Year))].sort((a,b)=>b-a);
 
   const y=document.getElementById("years");
+
   y.innerHTML=`<button onclick="render(all)">All</button>`;
 
   years.forEach(yr=>{
@@ -84,7 +85,8 @@ function render(list){
         <h3>${a.Title}</h3>
         <p>${a.Authors}</p>
         <p>${a.Year}</p>
-        <button onclick="openA('${id}')">Open</button>
+
+        <button onclick="openA('${id}')">Open Article</button>
       </div>
     `;
   });
