@@ -3,226 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <title>Herald Journals</title>
-
-<style>
-/* =========================
-   BASE
-========================= */
-body{
-  margin:0;
-  font-family: "Georgia", "Times New Roman", serif;
-  background:#f7f8fc;
-}
-
-/* HEADER */
-header{
-  background:#0b3d91;
-  color:white;
-  padding:25px;
-  text-align:center;
-}
-
-header h1{
-  margin:0;
-  font-size:28px;
-  letter-spacing:0.5px;
-}
-
-/* CONTROLS */
-.controls{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  padding:15px 25px;
-  flex-wrap:wrap;
-}
-
-.search{
-  flex:1;
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  font-family:inherit;
-}
-
-select{
-  padding:10px;
-  border-radius:8px;
-  font-family:inherit;
-}
-
-/* SECTIONS */
-.section-title{
-  padding:10px 25px 0;
-  font-size:18px;
-  font-weight:bold;
-  color:#333;
-}
-
-/* GRID */
-.container{
-  padding:20px 25px;
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap:18px;
-}
-
-/* =========================
-   CARD DESIGN (ACADEMIC STYLE)
-========================= */
-.card{
-  background:white;
-  border-radius:12px;
-  padding:18px;
-  border:1px solid #e5e8f0;
-  border-left:6px solid #0b3d91;
-  box-shadow:0 2px 8px rgba(0,0,0,0.06);
-  transition:0.2s;
-  display:flex;
-  gap:12px;
-  align-items:flex-start;
-}
-
-.card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 6px 16px rgba(0,0,0,0.12);
-}
-
-/* LOGO (AUTO GENERATED) */
-.logo{
-  width:42px;
-  height:42px;
-  border-radius:8px;
-  background:#0b3d91;
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:bold;
-  font-size:16px;
-  flex-shrink:0;
-}
-
-/* TEXT */
-.card h3{
-  margin:0;
-  font-size:16px;
-  color:#111;
-}
-
-.card p{
-  margin:4px 0;
-  color:#555;
-  font-size:13px;
-}
-
-/* BUTTON */
-.card button{
-  margin-top:10px;
-  padding:6px 10px;
-  border:none;
-  border-radius:6px;
-  background:#0b3d91;
-  color:white;
-  cursor:pointer;
-  font-family:inherit;
-}
-
-/* FEATURED / TRENDING BOX */
-.grid-2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:18px;
-  padding:0 25px;
-}
-
-/* PRINT MODE */
-@media print{
-  header, .controls, button { display:none; }
-  body { background:white; }
-  .card { box-shadow:none; }
-}
-
-/* RESPONSIVE */
-@media(max-width:1000px){
-  .container{ grid-template-columns:repeat(2,1fr); }
-  .grid-2{ grid-template-columns:1fr; }
-}
-
-@media(max-width:600px){
-  .container{ grid-template-columns:1fr; }
-}
-
-/* LOADING FAST MODE */
-.skeleton{
-  height:80px;
-  background:#eaeef6;
-  border-radius:10px;
-  animation:pulse 1.2s infinite;
-}
-
-@keyframes pulse{
-  0%{opacity:0.6;}
-  50%{opacity:1;}
-  100%{opacity:0.6;}
-}
-
-</style>
-
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>
-  <h1>Herald Open Access Journals</h1>
+<header class="global-header">
+  <div class="title">Herald Open Access Journals</div>
+
+  <a class="submit-btn"
+     href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
+     target="_blank">
+    📄 Submit Manuscript
+  </a>
 </header>
 
-<!-- CONTROLS -->
-<div class="controls">
-  <input class="search" id="searchBox" placeholder="Search journals...">
+<input class="search" id="searchBox" placeholder="Search journals...">
 
-  <select id="sortBox">
-    <option value="desc">Top Journals</option>
-    <option value="asc">A - Z</option>
-  </select>
-</div>
-
-<!-- FEATURED + TRENDING -->
-<div class="grid-2">
-
-  <div>
-    <div class="section-title">🔥 Featured Journals</div>
-    <div id="featured"></div>
-  </div>
-
-  <div>
-    <div class="section-title">📈 Trending Journals</div>
-    <div id="trending"></div>
-  </div>
-
-</div>
-
-<!-- ALL JOURNALS -->
-<div class="section-title">📚 All Journals</div>
 <div class="container" id="journalContainer"></div>
 
 <script>
 
-let journals=[];
-let journalData=[];
-
-const container=document.getElementById("journalContainer");
-
-/* FAST LOADING SKELETON */
-container.innerHTML=`
-  <div class="skeleton"></div>
-  <div class="skeleton"></div>
-  <div class="skeleton"></div>
-`;
-
-/* LOAD DATA */
 fetch("articles.json")
-.then(res=>res.json())
+.then(r=>r.json())
 .then(data=>{
 
   const map={};
@@ -233,86 +36,51 @@ fetch("articles.json")
     map[j]=(map[j]||0)+1;
   });
 
-  journals=Object.entries(map);
-  journalData=journals;
-
-  render();
+  render(Object.entries(map));
 });
 
-/* SEARCH + SORT */
-document.getElementById("searchBox").addEventListener("input",render);
-document.getElementById("sortBox").addEventListener("change",render);
+document.getElementById("searchBox").addEventListener("input",function(){
 
-/* RENDER */
-function render(){
+  fetch("articles.json")
+  .then(r=>r.json())
+  .then(data=>{
 
-  let q=document.getElementById("searchBox").value.toLowerCase();
-  let sort=document.getElementById("sortBox").value;
+    const q=this.value.toLowerCase();
 
-  let list=journalData.filter(j=>j[0].toLowerCase().includes(q));
+    const map={};
 
-  if(sort==="asc"){
-    list.sort((a,b)=>a[0].localeCompare(b[0]));
-  }else{
-    list.sort((a,b)=>b[1]-a[1]);
-  }
+    data.forEach(a=>{
+      const j=(a.Journal||"").trim();
+      if(!j.toLowerCase().includes(q)) return;
+      map[j]=(map[j]||0)+1;
+    });
 
-  /* FEATURED (TOP 3) */
-  renderBox("featured", list.slice(0,3));
-
-  /* TRENDING (NEXT 3) */
-  renderBox("trending", list.slice(3,6));
-
-  /* ALL */
-  renderMain(list);
-}
-
-/* BOX RENDER */
-function renderBox(id,list){
-
-  const el=document.getElementById(id);
-  el.innerHTML="";
-
-  list.forEach(([j,c])=>{
-
-    el.innerHTML+=cardHTML(j,c);
+    render(Object.entries(map));
   });
-}
 
-/* MAIN */
-function renderMain(list){
+});
 
+function render(list){
+
+  const container=document.getElementById("journalContainer");
   container.innerHTML="";
 
   list.forEach(([j,c])=>{
-    container.innerHTML+=cardHTML(j,c);
-  });
-}
 
-/* CARD */
-function cardHTML(journal,count){
-
-  const logo = journal.charAt(0).toUpperCase();
-
-  return `
-    <div class="card">
-      <div class="logo">${logo}</div>
-
-      <div>
-        <h3>${journal}</h3>
-        <p>${count} Articles</p>
-
-        <button onclick="openJournal('${journal.replace(/'/g,"")}' )">
+    container.innerHTML+=`
+      <div class="card">
+        <h3>${j}</h3>
+        <p>${c} Articles</p>
+        <button onclick="openJournal('${j}')">
           View Journal
         </button>
       </div>
-    </div>
-  `;
+    `;
+  });
 }
 
-/* OPEN */
-function openJournal(journal){
-  localStorage.setItem("journal",journal);
+function openJournal(j){
+  localStorage.setItem("journal",j);
   window.location.href="journals.html";
 }
 
