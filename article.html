@@ -40,6 +40,18 @@
   flex: 1;
   padding: 20px;
 }
+
+.search-box {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+a {
+  text-decoration: none;
+  color: #0b3d91;
+}
 </style>
 
 </head>
@@ -66,7 +78,10 @@
 
   <!-- ARTICLES -->
   <div class="content">
-    <div id="articleContainer" class="journal-container"></div>
+
+    <input class="search-box" id="searchBox" placeholder="Search articles...">
+
+    <div id="articleContainer"></div>
   </div>
 
 </div>
@@ -78,26 +93,40 @@ document.getElementById("journalTitle").innerText = journal;
 
 let allArticles = [];
 
+// LOAD DATA
 fetch('data.json?nocache=' + new Date().getTime())
   .then(res => res.json())
   .then(data => {
 
-    // FILTER JOURNAL (SAFE MATCH)
+    // SAFE JOURNAL MATCH (FIXED)
     allArticles = data.filter(item =>
-      (item.Journal || "").trim().toLowerCase() === journal.toLowerCase()
+      (item.Journal || "").toLowerCase().trim() === journal.toLowerCase()
     );
 
-    // SORT BY YEAR DESC
+    // SORT
     allArticles.sort((a, b) => b.Year - a.Year);
-
-    console.log("Articles Found:", allArticles.length);
 
     buildYearSidebar(allArticles);
     renderArticles(allArticles);
   });
 
 // --------------------
-// BUILD YEAR BUTTONS
+// SEARCH FUNCTION
+// --------------------
+document.getElementById("searchBox").addEventListener("input", function () {
+  const q = this.value.toLowerCase();
+
+  const filtered = allArticles.filter(a =>
+    (a.Title || "").toLowerCase().includes(q) ||
+    (a.Authors || "").toLowerCase().includes(q) ||
+    (a.DOI || "").toLowerCase().includes(q)
+  );
+
+  renderArticles(filtered);
+});
+
+// --------------------
+// YEAR SIDEBAR
 // --------------------
 function buildYearSidebar(data) {
 
@@ -145,15 +174,31 @@ function renderArticles(list) {
 
   list.forEach(a => {
 
+    const id = (a.DOI || "").split("/").pop();
+
     const div = document.createElement("div");
     div.className = "journal-card";
 
     div.innerHTML = `
-      <h3>${a.Title}</h3>
+      <h3>
+        <a href="articles/${id}.html">
+          ${a.Title}
+        </a>
+      </h3>
+
       <p><b>Year:</b> ${a.Year}</p>
       <p><b>Authors:</b> ${a.Authors}</p>
-      <p><b>DOI:</b> ${a.DOI}</p>
-      <a href="${a.HTML_URL}" target="_blank">🔗 Open Article</a>
+
+      <p>
+        <b>DOI:</b>
+        <a href="https://doi.org/${a.DOI}" target="_blank">
+          ${a.DOI}
+        </a>
+      </p>
+
+      <a href="${a.HTML_URL}" target="_blank">
+        🔗 Open Publisher Page
+      </a>
     `;
 
     container.appendChild(div);
