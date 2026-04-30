@@ -3,35 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <title>Journal Articles</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h2 id="title"></h2>
+<h2 id="title">Journal</h2>
 <div id="list"></div>
 
 <script>
-const journal = localStorage.getItem("journal");
+const journal = localStorage.getItem("journal") || "";
 
-document.getElementById("title").innerText = journal;
+document.getElementById("title").innerText = journal || "No Journal Selected";
 
 fetch("data.json")
   .then(res => res.json())
   .then(data => {
 
-    const filtered = data.filter(a => a.Journal === journal);
-
     const container = document.getElementById("list");
+
+    const filtered = data.filter(a =>
+      (a.Journal || "").trim() === journal.trim()
+    );
+
+    if (!filtered.length) {
+      container.innerHTML = "<p>No articles found.</p>";
+      return;
+    }
 
     filtered.forEach(a => {
 
-      const id = a.DOI.split("/").pop();
+      const id = (a.DOI || "").split("/").pop();
 
       const div = document.createElement("div");
 
       div.innerHTML = `
-        <h4>${a.Title}</h4>
-        <p>${a.Year}</p>
+        <h4>${a.Title || "No Title"}</h4>
+        <p><b>Year:</b> ${a.Year || ""}</p>
+
         <button onclick="openArticle('${id}')">
           Open Article
         </button>
@@ -40,6 +49,11 @@ fetch("data.json")
       container.appendChild(div);
     });
 
+  })
+  .catch(err => {
+    document.getElementById("list").innerHTML =
+      "<p>Error loading articles</p>";
+    console.error(err);
   });
 
 function openArticle(id){
