@@ -2,69 +2,48 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Journals</title>
-<link rel="stylesheet" href="style.css">
+<title>Journal Articles</title>
 </head>
 
 <body>
 
-<h2>All Journals</h2>
-
-<!-- 🔥 SUBMIT MANUSCRIPT BUTTON -->
-<div style="margin-bottom:20px;">
-    <a href="https://www.heraldopenaccess.us/submit-manuscript" target="_blank" class="submit-btn">
-        🚀 Submit Manuscript
-    </a>
-</div>
-
-<div id="journalList"></div>
+<h2 id="title"></h2>
+<div id="list"></div>
 
 <script>
-let allData = [];
+const journal = localStorage.getItem("journal");
 
-fetch("articles.json")
-.then(res => res.json())
-.then(data => {
-    allData = data;
-    renderJournals(data);
-});
+document.getElementById("title").innerText = journal;
 
-/* =====================
-   GROUP BY JOURNAL
-===================== */
-function renderJournals(data) {
+fetch("data.json")
+  .then(res => res.json())
+  .then(data => {
 
-    const journalsMap = {};
+    const filtered = data.filter(a => a.Journal === journal);
 
-    data.forEach(a => {
-        const j = a.Journal || "Unknown Journal";
+    const container = document.getElementById("list");
 
-        if (!journalsMap[j]) {
-            journalsMap[j] = 0;
-        }
-        journalsMap[j]++;
+    filtered.forEach(a => {
+
+      const id = a.DOI.split("/").pop();
+
+      const div = document.createElement("div");
+
+      div.innerHTML = `
+        <h4>${a.Title}</h4>
+        <p>${a.Year}</p>
+        <button onclick="openArticle('${id}')">
+          Open Article
+        </button>
+      `;
+
+      container.appendChild(div);
     });
 
-    let html = "";
+  });
 
-    Object.keys(journalsMap).forEach(journal => {
-
-        html += `
-        <div class="card">
-
-            <h3>${journal}</h3>
-
-            <p><b>Total Articles:</b> ${journalsMap[journal]}</p>
-
-            <a class="btn" href="search.html?journal=${encodeURIComponent(journal)}">
-                🔍 Search Published Articles
-            </a>
-
-        </div>
-        `;
-    });
-
-    document.getElementById("journalList").innerHTML = html;
+function openArticle(id){
+  window.location.href = "article.html?id=" + id;
 }
 </script>
 
