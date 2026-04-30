@@ -2,210 +2,83 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Articles</title>
+<title>Article</title>
 <link rel="stylesheet" href="style.css">
 
-<style>
-.layout {
-  display: flex;
+<script>
+// Load JSON once
+let articles = [];
+
+fetch('articles.json')
+  .then(res => res.json())
+  .then(data => {
+    articles = data;
+    loadArticle();
+  });
+
+// Get ID from URL
+function getId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("id");
 }
 
-/* LEFT PANEL */
-.year-panel {
-  width: 180px;
-  background: #f4f6f9;
-  padding: 15px;
-  height: 100vh;
-  position: sticky;
-  top: 0;
-}
+function loadArticle() {
+  const id = getId();
 
-.year-btn {
-  display: block;
-  margin: 6px 0;
-  padding: 8px;
-  background: white;
-  border: 1px solid #ccc;
-  cursor: pointer;
-  border-radius: 5px;
-}
+  const article = articles.find(a => {
+    const doi = a.DOI || "";
+    return doi.split("/").pop() === id;
+  });
 
-.year-btn:hover {
-  background: #0b3d91;
-  color: white;
-}
+  if (!article) {
+    document.body.innerHTML = "<h2>Article not found</h2>";
+    return;
+  }
 
-/* RIGHT CONTENT */
-.content {
-  flex: 1;
-  padding: 20px;
-}
+  const title = article.Title || "";
+  const journal = article.Journal || "";
+  const year = article.Year || "";
+  const authors = article.Authors || "";
+  const doi = article.DOI || "";
 
-.search-box {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  font-size: 16px;
-}
+  document.title = title;
 
-a {
-  text-decoration: none;
-  color: #0b3d91;
+  document.getElementById("content").innerHTML = `
+    <h1>${title}</h1>
+
+    <p><b>Authors:</b> ${authors}</p>
+    <p><b>Journal:</b> ${journal}</p>
+    <p><b>Year:</b> ${year}</p>
+    <p><b>DOI:</b> ${doi}</p>
+
+    <hr>
+
+    <h3>Access Article</h3>
+
+    <p>
+      <a href="https://doi.org/${doi}" target="_blank">🔗 DOI Link</a>
+    </p>
+
+    <p>
+      <a href="https://www.google.com/search?q=${encodeURIComponent(title)}" target="_blank">
+        🌐 Search Article
+      </a>
+    </p>
+  `;
 }
-</style>
+</script>
 
 </head>
 
 <body>
 
 <header>
-  <h1 id="journalTitle">Journal Articles</h1>
-
-  <a class="submit-btn"
-     href="https://www.heraldopenaccess.us/submit-manuscript"
-     target="_blank">
-    📄 Submit Manuscript
-  </a>
+  <h2>Herald Article</h2>
 </header>
 
-<div class="layout">
-
-  <!-- YEAR SIDEBAR -->
-  <div class="year-panel">
-    <h3>Years</h3>
-    <div id="yearList"></div>
-  </div>
-
-  <!-- ARTICLES -->
-  <div class="content">
-
-    <input class="search-box" id="searchBox" placeholder="Search articles...">
-
-    <div id="articleContainer"></div>
-  </div>
-
+<div id="content" style="padding:20px;">
+  Loading article...
 </div>
-
-<script>
-
-const journal = (localStorage.getItem("selectedJournal") || "").trim();
-document.getElementById("journalTitle").innerText = journal;
-
-let allArticles = [];
-
-// LOAD DATA
-fetch('data.json?nocache=' + new Date().getTime())
-  .then(res => res.json())
-  .then(data => {
-
-    // SAFE JOURNAL MATCH (FIXED)
-    allArticles = data.filter(item =>
-      (item.Journal || "").toLowerCase().trim() === journal.toLowerCase()
-    );
-
-    // SORT
-    allArticles.sort((a, b) => b.Year - a.Year);
-
-    buildYearSidebar(allArticles);
-    renderArticles(allArticles);
-  });
-
-// --------------------
-// SEARCH FUNCTION
-// --------------------
-document.getElementById("searchBox").addEventListener("input", function () {
-  const q = this.value.toLowerCase();
-
-  const filtered = allArticles.filter(a =>
-    (a.Title || "").toLowerCase().includes(q) ||
-    (a.Authors || "").toLowerCase().includes(q) ||
-    (a.DOI || "").toLowerCase().includes(q)
-  );
-
-  renderArticles(filtered);
-});
-
-// --------------------
-// YEAR SIDEBAR
-// --------------------
-function buildYearSidebar(data) {
-
-  const yearList = document.getElementById("yearList");
-
-  const years = [...new Set(data.map(a => a.Year))].sort((a, b) => b - a);
-
-  let html = `
-    <button class="year-btn" onclick="renderArticles(allArticles)">
-      All Years
-    </button>
-  `;
-
-  years.forEach(year => {
-    html += `
-      <button class="year-btn" onclick="filterYear(${year})">
-        ${year}
-      </button>
-    `;
-  });
-
-  yearList.innerHTML = html;
-}
-
-// --------------------
-// FILTER BY YEAR
-// --------------------
-function filterYear(year) {
-  const filtered = allArticles.filter(a => a.Year === year);
-  renderArticles(filtered);
-}
-
-// --------------------
-// RENDER ARTICLES
-// --------------------
-function renderArticles(list) {
-
-  const container = document.getElementById("articleContainer");
-  container.innerHTML = "";
-
-  if (!list.length) {
-    container.innerHTML = "<p>No articles found.</p>";
-    return;
-  }
-
-  list.forEach(a => {
-
-    const id = (a.DOI || "").split("/").pop();
-
-    const div = document.createElement("div");
-    div.className = "journal-card";
-
-    div.innerHTML = `
-      <h3>
-        <a href="articles/${id}.html">
-          ${a.Title}
-        </a>
-      </h3>
-
-      <p><b>Year:</b> ${a.Year}</p>
-      <p><b>Authors:</b> ${a.Authors}</p>
-
-      <p>
-        <b>DOI:</b>
-        <a href="https://doi.org/${a.DOI}" target="_blank">
-          ${a.DOI}
-        </a>
-      </p>
-
-      <a href="${a.HTML_URL}" target="_blank">
-        🔗 Open Publisher Page
-      </a>
-    `;
-
-    container.appendChild(div);
-  });
-}
-
-</script>
 
 </body>
 </html>
