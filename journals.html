@@ -9,6 +9,7 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
+  background: #f6f8fb;
 }
 
 /* HEADER */
@@ -17,27 +18,34 @@ header {
   color: white;
   padding: 20px;
   text-align: center;
-  position: relative;
 }
 
-/* SUBMIT BUTTON */
+/* JOURNAL TITLE */
+#journalTitle {
+  margin: 0;
+  font-size: 24px;
+}
+
+/* SUBMIT BUTTON UNDER TITLE */
+.submit-wrapper {
+  margin-top: 10px;
+}
+
 .submit-btn {
-  position: absolute;
-  right: 20px;
-  top: 20px;
+  display: inline-block;
   background: #ffcc00;
   color: black;
-  padding: 10px 15px;
+  padding: 10px 18px;
   text-decoration: none;
   border-radius: 6px;
   font-weight: bold;
 }
 
 .submit-btn:hover {
-  background: #ffdb4d;
+  background: #ffe066;
 }
 
-/* LAYOUT */
+/* MAIN LAYOUT */
 .container {
   display: flex;
 }
@@ -45,22 +53,27 @@ header {
 /* LEFT YEAR PANEL */
 .year-panel {
   width: 200px;
-  background: #f4f6f9;
+  background: white;
   padding: 15px;
   height: 100vh;
   overflow-y: auto;
   border-right: 1px solid #ddd;
 }
 
+.year-panel h3 {
+  margin-top: 0;
+}
+
 .year-btn {
   display: block;
-  margin: 5px 0;
+  margin: 6px 0;
   padding: 8px;
-  background: white;
   border: 1px solid #ccc;
+  background: #f9f9f9;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 6px;
   text-align: left;
+  transition: 0.2s;
 }
 
 .year-btn:hover {
@@ -74,17 +87,64 @@ header {
   padding: 20px;
 }
 
-/* ARTICLE CARD */
+/* CARD DESIGN */
 .card {
-  border: 1px solid #ddd;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 8px;
   background: white;
+  padding: 18px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
 }
 
 .card h4 {
-  margin: 0 0 8px 0;
+  margin: 0 0 10px 0;
+}
+
+.card p {
+  margin: 5px 0;
+  color: #444;
+}
+
+/* BUTTON */
+.open-btn {
+  margin-top: 10px;
+  display: inline-block;
+  padding: 8px 14px;
+  background: #0b3d91;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.open-btn:hover {
+  background: #092c6b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .year-panel {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .year-btn {
+    flex: 1;
+    min-width: 80px;
+  }
 }
 </style>
 
@@ -93,14 +153,18 @@ header {
 <body>
 
 <header>
+
   <h2 id="journalTitle">Journal</h2>
 
-  <!-- SUBMIT BUTTON -->
-  <a class="submit-btn"
-     href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
-     target="_blank">
-    📄 Submit Your Manuscript
-  </a>
+  <!-- SUBMIT BUTTON UNDER TITLE -->
+  <div class="submit-wrapper">
+    <a class="submit-btn"
+       href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
+       target="_blank">
+      📄 Submit Your Manuscript
+    </a>
+  </div>
+
 </header>
 
 <div class="container">
@@ -140,7 +204,7 @@ fetch("articles.json")
   });
 
 /* =========================
-   BUILD YEAR FILTER
+   YEARS
 ========================= */
 function buildYears(data){
 
@@ -164,7 +228,7 @@ function buildYears(data){
 }
 
 /* =========================
-   FILTER BY YEAR
+   FILTER YEAR
 ========================= */
 function filterYear(year){
   const filtered = allArticles.filter(a => a.Year == year);
@@ -172,7 +236,7 @@ function filterYear(year){
 }
 
 /* =========================
-   RENDER ARTICLES
+   RENDER CARDS
 ========================= */
 function render(list){
 
@@ -193,23 +257,17 @@ function render(list){
 
     div.innerHTML = `
       <h4>${a.Title}</h4>
+
       <p><b>Year:</b> ${a.Year}</p>
       <p><b>Authors:</b> ${a.Authors}</p>
 
-      <button onclick="openArticle('${id}')">
+      <a class="open-btn" href="article.html?id=${id}">
         Open Article
-      </button>
+      </a>
     `;
 
     container.appendChild(div);
   });
-}
-
-/* =========================
-   OPEN ARTICLE
-========================= */
-function openArticle(id){
-  window.location.href = "article.html?id=" + id;
 }
 
 </script>
