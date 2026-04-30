@@ -12,9 +12,8 @@
   <div class="header-inner">
     <div class="title" id="title">Journal</div>
 
-    <a class="submit-btn"
-       href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
-       target="_blank">
+    <a class="submit-btn" target="_blank"
+       href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript">
       📄 Submit Manuscript
     </a>
   </div>
@@ -29,7 +28,10 @@
     <div id="years"></div>
   </div>
 
-  <div class="container" id="articles"></div>
+  <div>
+    <input class="search" id="searchBox" placeholder="Search articles...">
+    <div class="container" id="articles"></div>
+  </div>
 
 </div>
 
@@ -51,6 +53,7 @@ fetch("articles.json")
 
   buildYears();
   render(all);
+
 });
 
 function buildYears(){
@@ -71,6 +74,19 @@ function filter(y){
   render(all.filter(a=>a.Year==y));
 }
 
+document.getElementById("searchBox").addEventListener("input",function(){
+
+  const q=this.value.toLowerCase();
+
+  const f=all.filter(a=>
+    (a.Title||"").toLowerCase().includes(q) ||
+    (a.Authors||"").toLowerCase().includes(q)
+  );
+
+  render(f);
+
+});
+
 function render(list){
 
   const c=document.getElementById("articles");
@@ -82,11 +98,17 @@ function render(list){
 
     c.innerHTML+=`
       <div class="card">
+
         <h3>${a.Title}</h3>
+
         <p>${a.Authors}</p>
+
         <p>${a.Year}</p>
 
+        <p>${(a.Title||"").slice(0,90)}...</p>
+
         <button onclick="openA('${id}')">Open Article</button>
+
       </div>
     `;
   });
