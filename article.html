@@ -46,7 +46,9 @@ function load(){
 
   document.getElementById("content").innerHTML=`
     <div class="article-card">
+
       <h2>${a.Title}</h2>
+
       <p><b>Authors:</b> ${a.Authors}</p>
       <p><b>Journal:</b> ${a.Journal}</p>
       <p><b>Year:</b> ${a.Year}</p>
@@ -54,6 +56,11 @@ function load(){
       <button onclick="window.open('https://doi.org/${a.DOI}')">
         Open DOI
       </button>
+
+      <button onclick="window.open('https://scholar.google.com/scholar?q=${encodeURIComponent(a.Title)}')">
+        Google Scholar
+      </button>
+
     </div>
   `;
 }
