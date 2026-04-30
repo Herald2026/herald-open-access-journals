@@ -1,13 +1,11 @@
 body{
   margin:0;
-  background:#edf3ee; /* soft academic green background */
+  background:#edf3ee;
   font-family: Georgia, "Times New Roman", serif;
   color:#1d2a1d;
 }
 
-/* =========================
-   GLOBAL PAGE PADDING
-========================= */
+/* ================= GLOBAL PADDING ================= */
 .page{
   padding:25px 70px;
 }
@@ -18,9 +16,7 @@ body{
   }
 }
 
-/* =========================
-   HEADER
-========================= */
+/* ================= HEADER ================= */
 .global-header{
   background:#0b3d91;
   color:white;
@@ -50,9 +46,7 @@ body{
   text-decoration:none;
 }
 
-/* =========================
-   3 COLUMN GRID (JOURNALS)
-========================= */
+/* ================= 3 COLUMN GRID ================= */
 .container{
   display:grid;
   grid-template-columns:repeat(3, 1fr);
@@ -60,12 +54,10 @@ body{
   margin-top:20px;
 }
 
-/* =========================
-   STRONG CARD STYLE
-========================= */
+/* ================= STRONG CARD ================= */
 .card{
-  background:#f4f8f2; /* soft green paper tone */
-  border:2px solid #2e7d32; /* 🔥 strong border */
+  background:#f4f8f2;
+  border:2px solid #2e7d32;
   border-radius:14px;
   padding:18px;
   box-shadow:0 6px 14px rgba(0,0,0,0.08);
@@ -77,19 +69,15 @@ body{
   box-shadow:0 10px 20px rgba(0,0,0,0.12);
 }
 
-/* TEXT INSIDE CARD */
 .card h3{
   margin:0;
-  font-size:18px;
 }
 
 .card p{
   margin:6px 0;
 }
 
-/* =========================
-   BUTTONS (GREEN)
-========================= */
+/* ================= BUTTONS ================= */
 button{
   background:#2e7d32;
   color:white;
@@ -97,22 +85,20 @@ button{
   padding:9px 14px;
   border-radius:8px;
   cursor:pointer;
+  width:auto;
 }
 
 button:hover{
   background:#1b5e20;
 }
 
-/* =========================
-   JOURNAL PAGE LAYOUT
-========================= */
+/* ================= JOURNAL LAYOUT ================= */
 .journal-layout{
   display:grid;
   grid-template-columns:220px 1fr;
   gap:20px;
 }
 
-/* LEFT YEAR BOX */
 .year-box{
   background:#f4f8f2;
   border:2px solid #2e7d32;
@@ -120,9 +106,12 @@ button:hover{
   border-radius:12px;
 }
 
-/* =========================
-   ARTICLE PAGE
-========================= */
+.year-box button{
+  width:100%;
+  margin:6px 0;
+}
+
+/* ================= ARTICLE PAGE ================= */
 .article-box{
   max-width:900px;
   margin:auto;
@@ -136,9 +125,7 @@ button:hover{
   box-shadow:0 6px 14px rgba(0,0,0,0.08);
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* ================= RESPONSIVE ================= */
 @media(max-width:1000px){
   .container{
     grid-template-columns:repeat(2,1fr);
