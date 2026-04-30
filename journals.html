@@ -8,26 +8,25 @@
 
 <body>
 
-<h2 id="title">Journal</h2>
+<h2 id="title"></h2>
 <div id="list"></div>
 
 <script>
 const journal = localStorage.getItem("journal") || "";
+document.getElementById("title").innerText = journal;
 
-document.getElementById("title").innerText = journal || "No Journal Selected";
-
-fetch("data.json")
+fetch("articles.json")
   .then(res => res.json())
   .then(data => {
-
-    const container = document.getElementById("list");
 
     const filtered = data.filter(a =>
       (a.Journal || "").trim() === journal.trim()
     );
 
+    const container = document.getElementById("list");
+
     if (!filtered.length) {
-      container.innerHTML = "<p>No articles found.</p>";
+      container.innerHTML = "<p>No articles found</p>";
       return;
     }
 
@@ -38,8 +37,8 @@ fetch("data.json")
       const div = document.createElement("div");
 
       div.innerHTML = `
-        <h4>${a.Title || "No Title"}</h4>
-        <p><b>Year:</b> ${a.Year || ""}</p>
+        <h4>${a.Title}</h4>
+        <p>${a.Year}</p>
 
         <button onclick="openArticle('${id}')">
           Open Article
@@ -49,11 +48,6 @@ fetch("data.json")
       container.appendChild(div);
     });
 
-  })
-  .catch(err => {
-    document.getElementById("list").innerHTML =
-      "<p>Error loading articles</p>";
-    console.error(err);
   });
 
 function openArticle(id){
