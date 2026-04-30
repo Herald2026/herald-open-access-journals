@@ -15,13 +15,12 @@
 <div id="journalContainer"></div>
 
 <script>
-let journalCount = {};
-
-fetch("data.json")
+fetch("articles.json")
   .then(res => res.json())
   .then(data => {
 
     const container = document.getElementById("journalContainer");
+    const journalCount = {};
 
     data.forEach(a => {
       const j = (a.Journal || "").trim();
@@ -30,15 +29,15 @@ fetch("data.json")
     });
 
     Object.entries(journalCount)
-      .sort((a, b) => b[1] - a[1])
+      .sort((a,b) => b[1] - a[1])
       .forEach(([journal, count]) => {
 
         const div = document.createElement("div");
 
         div.innerHTML = `
           <h3>${journal}</h3>
-          <p><b>${count}</b> articles</p>
-          <button onclick="openJournal(\`${journal.replace(/`/g, "")}\`)">
+          <p>${count} articles</p>
+          <button onclick="openJournal('${journal.replace(/'/g,"")}' )">
             View Articles
           </button>
         `;
@@ -46,11 +45,6 @@ fetch("data.json")
         container.appendChild(div);
       });
 
-  })
-  .catch(err => {
-    document.getElementById("journalContainer").innerHTML =
-      "<p>Error loading journals</p>";
-    console.error(err);
   });
 
 function openJournal(journal){
