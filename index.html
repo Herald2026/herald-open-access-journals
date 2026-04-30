@@ -9,18 +9,26 @@
 <body>
 
 <header class="global-header">
-  <div class="title">Herald Open Access Journals</div>
+  <div class="header-inner">
 
-  <a class="submit-btn"
-     href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
-     target="_blank">
-    📄 Submit Manuscript
-  </a>
+    <div class="title">Herald Open Access Journals</div>
+
+    <a class="submit-btn"
+       href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
+       target="_blank">
+      📄 Submit Manuscript
+    </a>
+
+  </div>
 </header>
+
+<div class="page">
 
 <input class="search" id="searchBox" placeholder="Search journals...">
 
 <div class="container" id="journalContainer"></div>
+
+</div>
 
 <script>
 
@@ -37,6 +45,7 @@ fetch("articles.json")
   });
 
   render(Object.entries(map));
+
 });
 
 document.getElementById("searchBox").addEventListener("input",function(){
@@ -46,7 +55,6 @@ document.getElementById("searchBox").addEventListener("input",function(){
   .then(data=>{
 
     const q=this.value.toLowerCase();
-
     const map={};
 
     data.forEach(a=>{
@@ -62,24 +70,22 @@ document.getElementById("searchBox").addEventListener("input",function(){
 
 function render(list){
 
-  const container=document.getElementById("journalContainer");
-  container.innerHTML="";
+  const c=document.getElementById("journalContainer");
+  c.innerHTML="";
 
-  list.forEach(([j,c])=>{
-
-    container.innerHTML+=`
+  list.forEach(([j,count])=>{
+    c.innerHTML+=`
       <div class="card">
         <h3>${j}</h3>
-        <p>${c} Articles</p>
-        <button onclick="openJournal('${j}')">
-          View Journal
-        </button>
+        <p>${count} Articles</p>
+        <button onclick="openJ('${j}')">View Journal</button>
       </div>
     `;
   });
+
 }
 
-function openJournal(j){
+function openJ(j){
   localStorage.setItem("journal",j);
   window.location.href="journals.html";
 }
