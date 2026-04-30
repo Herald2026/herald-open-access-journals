@@ -4,124 +4,21 @@
 <meta charset="UTF-8">
 <title>Article</title>
 <link rel="stylesheet" href="style.css">
-
-<style>
-body{
-  margin:0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background:#f5f7fb;
-  color:#222;
-}
-
-/* HEADER */
-header{
-  background:#0b3d91;
-  color:white;
-  padding:15px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-}
-
-.back-btn{
-  background:white;
-  color:#0b3d91;
-  padding:8px 12px;
-  border-radius:6px;
-  text-decoration:none;
-  font-weight:bold;
-}
-
-/* MAIN CARD */
-.container{
-  max-width:900px;
-  margin:20px auto;
-  padding:20px;
-}
-
-.paper{
-  background:white;
-  padding:25px;
-  border-radius:12px;
-  box-shadow:0 4px 18px rgba(0,0,0,0.08);
-}
-
-/* TITLE */
-h1{
-  font-size:24px;
-  margin-bottom:10px;
-  color:#111;
-}
-
-/* META */
-.meta{
-  color:#555;
-  font-size:14px;
-  margin-bottom:15px;
-  line-height:1.6;
-}
-
-/* ABSTRACT BOX */
-.abstract{
-  background:#f0f4ff;
-  padding:15px;
-  border-left:4px solid #0b3d91;
-  border-radius:6px;
-  margin:15px 0;
-}
-
-/* BUTTONS */
-.actions{
-  margin-top:20px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.btn{
-  padding:10px 14px;
-  border-radius:6px;
-  text-decoration:none;
-  font-weight:bold;
-  font-size:14px;
-}
-
-.doi{
-  background:#0b3d91;
-  color:white;
-}
-
-.scholar{
-  background:#1a73e8;
-  color:white;
-}
-
-.pdf{
-  background:#e53935;
-  color:white;
-}
-
-/* RESPONSIVE */
-@media(max-width:600px){
-  .paper{
-    padding:15px;
-  }
-}
-</style>
-
 </head>
 
 <body>
 
-<header>
-  <a class="back-btn" href="javascript:history.back()">← Back</a>
-  <div>Herald Open Access Journals</div>
+<header class="global-header">
+  <div class="title">Article View</div>
+
+  <a class="submit-btn"
+     href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
+     target="_blank">
+    📄 Submit Manuscript
+  </a>
 </header>
 
-<div class="container">
-  <div id="content" class="paper">Loading...</div>
-</div>
+<div class="container" id="content"></div>
 
 <script>
 
@@ -129,72 +26,33 @@ let data=[];
 
 fetch("articles.json")
 .then(r=>r.json())
-.then(json=>{
-  data=json;
+.then(d=>{
+  data=d;
   load();
 });
 
-function getId(){
-  return new URLSearchParams(window.location.search).get("id");
-}
-
 function load(){
 
-  const id=getId();
+  const id=new URLSearchParams(window.location.search).get("id");
 
   const a=data.find(x=>(x.DOI||"").split("/").pop()===id);
 
   if(!a){
-    document.getElementById("content").innerHTML="<h2>Article Not Found</h2>";
+    document.getElementById("content").innerHTML="Not Found";
     return;
   }
 
-  document.title=a.Title;
-
-  const abstractText =
-    "This article titled '" + a.Title +
-    "' authored by " + a.Authors +
-    " is published in " + a.Journal +
-    " (" + a.Year + "). It contributes to academic research in this field.";
-
   document.getElementById("content").innerHTML=`
-    
-    <h1>${a.Title}</h1>
-
-    <div class="meta">
+    <div class="card">
+      <h2>${a.Title}</h2>
       <p><b>Authors:</b> ${a.Authors}</p>
       <p><b>Journal:</b> ${a.Journal}</p>
       <p><b>Year:</b> ${a.Year}</p>
-      <p><b>DOI:</b> ${a.DOI}</p>
+
+      <button onclick="window.open('https://doi.org/${a.DOI}')">
+        Open DOI
+      </button>
     </div>
-
-    <div class="abstract">
-      <b>Abstract</b>
-      <p>${abstractText}</p>
-    </div>
-
-    <div class="actions">
-
-      <a class="btn doi" target="_blank"
-         href="https://doi.org/${a.DOI}">
-        🔗 Open DOI
-      </a>
-
-      <a class="btn scholar" target="_blank"
-         href="https://scholar.google.com/scholar?q=${encodeURIComponent(a.Title)}">
-        📚 Google Scholar
-      </a>
-
-      ${
-        a.HTML_URL
-        ? `<a class="btn pdf" target="_blank" href="${a.HTML_URL}">
-            📄 Publisher Page
-          </a>`
-        : ""
-      }
-
-    </div>
-
   `;
 }
 
