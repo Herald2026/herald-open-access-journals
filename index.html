@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Herald Journals</title>
+<title>Journals</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -10,25 +10,17 @@
 
 <header class="global-header">
   <div class="header-inner">
-
     <div class="title">Herald Open Access Journals</div>
 
     <a class="submit-btn" target="_blank"
-       href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript">
+       href="https://www.heraldopenaccess.us/submit-manuscript">
       📄 Submit Manuscript
     </a>
-
   </div>
 </header>
 
 <div class="page">
 
-<input class="search" id="search" placeholder="Search journals...">
-
-<h3>🔥 Featured Journals</h3>
-<div class="container" id="featured"></div>
-
-<h3>All Journals</h3>
 <div class="container" id="journalContainer"></div>
 
 </div>
@@ -46,26 +38,24 @@ fetch("articles.json")
     map[j]=(map[j]||0)+1;
   });
 
-  const entries=Object.entries(map);
+  const sorted = Object.entries(map)
+    .sort((a,b)=>b[1]-a[1]); // TOP COUNT FIRST
 
-  const featured=entries.slice(0,6);
-
-  render(featured,"featured");
-  render(entries,"journalContainer");
+  render(sorted);
 
 });
 
-function render(list,id){
+function render(list){
 
-  const c=document.getElementById(id);
+  const c=document.getElementById("journalContainer");
   c.innerHTML="";
 
   list.forEach(([j,count])=>{
     c.innerHTML+=`
       <div class="card">
         <h3>${j}</h3>
-        <p>${count} Articles</p>
-        <button onclick="openJ('${j}')">View</button>
+        <p><b>${count}</b> Articles</p>
+        <button onclick="openJ('${j}')">View Journal</button>
       </div>
     `;
   });
