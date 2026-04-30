@@ -10,59 +10,44 @@
 
 <header>
   <h1>Herald Open Access Journals</h1>
-
-  <a class="submit-btn"
-     href="https://www.heraldopenaccess.us/submit-manuscript"
-     target="_blank">
-    📄 Submit Manuscript
-  </a>
 </header>
 
-<div id="journalContainer" class="journal-container"></div>
+<div id="journalContainer"></div>
 
 <script>
-fetch('data.json?nocache=' + new Date().getTime())
+fetch("data.json")
   .then(res => res.json())
   .then(data => {
 
     const container = document.getElementById("journalContainer");
 
-    // STEP 1: COUNT ARTICLES PER JOURNAL
     const journalCount = {};
 
-    data.forEach(item => {
-      const j = (item.Journal || "").trim();
+    data.forEach(a => {
+      const j = (a.Journal || "").trim();
       journalCount[j] = (journalCount[j] || 0) + 1;
     });
 
-    // STEP 2: SORT BY COUNT DESC
-    const sorted = Object.entries(journalCount)
-      .sort((a, b) => b[1] - a[1]);
+    Object.entries(journalCount).forEach(([journal, count]) => {
 
-    console.log("Sorted Journals:", sorted);
+      const div = document.createElement("div");
 
-    // STEP 3: DISPLAY
-    sorted.forEach(([journal, count]) => {
-
-      const card = document.createElement("div");
-      card.className = "journal-card";
-
-      card.innerHTML = `
+      div.innerHTML = `
         <h3>${journal}</h3>
-        <p><b>Articles:</b> ${count}</p>
+        <p>${count} articles</p>
         <button onclick="openJournal('${journal}')">
-          🔍 View Articles
+          View Articles
         </button>
       `;
 
-      container.appendChild(card);
+      container.appendChild(div);
     });
 
   });
 
-function openJournal(journal) {
-  localStorage.setItem("selectedJournal", journal.trim());
-  window.location.href = "article.html";
+function openJournal(journal){
+  localStorage.setItem("journal", journal);
+  window.location.href = "journals.html";
 }
 </script>
 
