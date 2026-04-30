@@ -2,27 +2,36 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Journal</title>
+<title>Journal Articles</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <header class="global-header">
-  <div class="title" id="title">Journal</div>
+  <div class="header-inner">
+    <div class="title" id="title">Journal</div>
 
-  <a class="submit-btn"
-     href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
-     target="_blank">
-    📄 Submit Manuscript
-  </a>
+    <a class="submit-btn"
+       href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
+       target="_blank">
+      📄 Submit Manuscript
+    </a>
+  </div>
 </header>
 
-<div class="container">
+<div class="page">
 
-  <div id="years"></div>
+<div class="journal-layout">
 
-  <div id="articles" class="container"></div>
+  <div class="year-box">
+    <h3>Years</h3>
+    <div id="years"></div>
+  </div>
+
+  <div id="articles"></div>
+
+</div>
 
 </div>
 
@@ -48,16 +57,16 @@ function buildYears(){
 
   const years=[...new Set(all.map(a=>a.Year))].sort((a,b)=>b-a);
 
-  let html="";
+  const y=document.getElementById("years");
+  y.innerHTML=`<button onclick="render(all)">All</button>`;
 
-  years.forEach(y=>{
-    html+=`<button onclick="filterYear(${y})">${y}</button><br><br>`;
+  years.forEach(yr=>{
+    y.innerHTML+=`<button onclick="filter(${yr})">${yr}</button>`;
   });
 
-  document.getElementById("years").innerHTML=html;
 }
 
-function filterYear(y){
+function filter(y){
   render(all.filter(a=>a.Year==y));
 }
 
@@ -73,13 +82,13 @@ function render(list){
     c.innerHTML+=`
       <div class="card">
         <h3>${a.Title}</h3>
-        <p>${a.Year}</p>
         <p>${a.Authors}</p>
-
+        <p>${a.Year}</p>
         <button onclick="openA('${id}')">Open</button>
       </div>
     `;
   });
+
 }
 
 function openA(id){
