@@ -2,272 +2,88 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Journal Articles</title>
+<title>Journal</title>
 <link rel="stylesheet" href="style.css">
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f6f8fb;
-}
-
-/* HEADER */
-header {
-  background: #0b3d91;
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-/* JOURNAL TITLE */
-#journalTitle {
-  margin: 0;
-  font-size: 24px;
-}
-
-/* SUBMIT BUTTON UNDER TITLE */
-.submit-wrapper {
-  margin-top: 10px;
-}
-
-.submit-btn {
-  display: inline-block;
-  background: #ffcc00;
-  color: black;
-  padding: 10px 18px;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
-}
-
-.submit-btn:hover {
-  background: #ffe066;
-}
-
-/* MAIN LAYOUT */
-.container {
-  display: flex;
-}
-
-/* LEFT YEAR PANEL */
-.year-panel {
-  width: 200px;
-  background: white;
-  padding: 15px;
-  height: 100vh;
-  overflow-y: auto;
-  border-right: 1px solid #ddd;
-}
-
-.year-panel h3 {
-  margin-top: 0;
-}
-
-.year-btn {
-  display: block;
-  margin: 6px 0;
-  padding: 8px;
-  border: 1px solid #ccc;
-  background: #f9f9f9;
-  cursor: pointer;
-  border-radius: 6px;
-  text-align: left;
-  transition: 0.2s;
-}
-
-.year-btn:hover {
-  background: #0b3d91;
-  color: white;
-}
-
-/* RIGHT CONTENT */
-.content {
-  flex: 1;
-  padding: 20px;
-}
-
-/* CARD DESIGN */
-.card {
-  background: white;
-  padding: 18px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-}
-
-.card h4 {
-  margin: 0 0 10px 0;
-}
-
-.card p {
-  margin: 5px 0;
-  color: #444;
-}
-
-/* BUTTON */
-.open-btn {
-  margin-top: 10px;
-  display: inline-block;
-  padding: 8px 14px;
-  background: #0b3d91;
-  color: white;
-  border-radius: 6px;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.open-btn:hover {
-  background: #092c6b;
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-
-  .year-panel {
-    width: 100%;
-    height: auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-  }
-
-  .year-btn {
-    flex: 1;
-    min-width: 80px;
-  }
-}
-</style>
-
 </head>
 
 <body>
 
-<header>
+<header class="global-header">
+  <div class="title" id="title">Journal</div>
 
-  <h2 id="journalTitle">Journal</h2>
-
-  <!-- SUBMIT BUTTON UNDER TITLE -->
-  <div class="submit-wrapper">
-    <a class="submit-btn"
-       href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
-       target="_blank">
-      📄 Submit Your Manuscript
-    </a>
-  </div>
-
+  <a class="submit-btn"
+     href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
+     target="_blank">
+    📄 Submit Manuscript
+  </a>
 </header>
 
 <div class="container">
 
-  <!-- LEFT YEAR PANEL -->
-  <div class="year-panel">
-    <h3>Years</h3>
-    <div id="yearList"></div>
-  </div>
+  <div id="years"></div>
 
-  <!-- RIGHT CONTENT -->
-  <div class="content">
-    <div id="articleList"></div>
-  </div>
+  <div id="articles" class="container"></div>
 
 </div>
 
 <script>
 
-const journal = localStorage.getItem("journal") || "";
-document.getElementById("journalTitle").innerText = journal;
+let all=[];
 
-let allArticles = [];
+const journal=localStorage.getItem("journal");
+
+document.getElementById("title").innerText=journal;
 
 fetch("articles.json")
-  .then(res => res.json())
-  .then(data => {
+.then(r=>r.json())
+.then(data=>{
 
-    allArticles = data.filter(a =>
-      (a.Journal || "").trim() === journal.trim()
-    );
+  all=data.filter(a=>a.Journal===journal);
 
-    allArticles.sort((a,b) => b.Year - a.Year);
+  buildYears();
+  render(all);
+});
 
-    buildYears(allArticles);
-    render(allArticles);
+function buildYears(){
+
+  const years=[...new Set(all.map(a=>a.Year))].sort((a,b)=>b-a);
+
+  let html="";
+
+  years.forEach(y=>{
+    html+=`<button onclick="filterYear(${y})">${y}</button><br><br>`;
   });
 
-/* =========================
-   YEARS
-========================= */
-function buildYears(data){
-
-  const years = [...new Set(data.map(a => a.Year))].sort((a,b)=>b-a);
-
-  let html = `
-    <button class="year-btn" onclick="render(allArticles)">
-      All Years
-    </button>
-  `;
-
-  years.forEach(y => {
-    html += `
-      <button class="year-btn" onclick="filterYear(${y})">
-        ${y}
-      </button>
-    `;
-  });
-
-  document.getElementById("yearList").innerHTML = html;
+  document.getElementById("years").innerHTML=html;
 }
 
-/* =========================
-   FILTER YEAR
-========================= */
-function filterYear(year){
-  const filtered = allArticles.filter(a => a.Year == year);
-  render(filtered);
+function filterYear(y){
+  render(all.filter(a=>a.Year==y));
 }
 
-/* =========================
-   RENDER CARDS
-========================= */
 function render(list){
 
-  const container = document.getElementById("articleList");
-  container.innerHTML = "";
+  const c=document.getElementById("articles");
+  c.innerHTML="";
 
-  if(!list.length){
-    container.innerHTML = "<p>No articles found</p>";
-    return;
-  }
+  list.forEach(a=>{
 
-  list.forEach(a => {
+    const id=(a.DOI||"").split("/").pop();
 
-    const id = (a.DOI || "").split("/").pop();
+    c.innerHTML+=`
+      <div class="card">
+        <h3>${a.Title}</h3>
+        <p>${a.Year}</p>
+        <p>${a.Authors}</p>
 
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `
-      <h4>${a.Title}</h4>
-
-      <p><b>Year:</b> ${a.Year}</p>
-      <p><b>Authors:</b> ${a.Authors}</p>
-
-      <a class="open-btn" href="article.html?id=${id}">
-        Open Article
-      </a>
+        <button onclick="openA('${id}')">Open</button>
+      </div>
     `;
-
-    container.appendChild(div);
   });
+}
+
+function openA(id){
+  window.location.href="article.html?id="+id;
 }
 
 </script>
