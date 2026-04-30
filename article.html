@@ -9,16 +9,18 @@
 <body>
 
 <header class="global-header">
-  <div class="title">Article View</div>
+  <div class="header-inner">
+    <div class="title">Article View</div>
 
-  <a class="submit-btn"
-     href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
-     target="_blank">
-    📄 Submit Manuscript
-  </a>
+    <a class="submit-btn"
+       href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
+       target="_blank">
+      📄 Submit Manuscript
+    </a>
+  </div>
 </header>
 
-<div class="container" id="content"></div>
+<div class="page article-box" id="content"></div>
 
 <script>
 
@@ -33,7 +35,7 @@ fetch("articles.json")
 
 function load(){
 
-  const id=new URLSearchParams(window.location.search).get("id");
+  const id=new URLSearchParams(location.search).get("id");
 
   const a=data.find(x=>(x.DOI||"").split("/").pop()===id);
 
@@ -43,7 +45,7 @@ function load(){
   }
 
   document.getElementById("content").innerHTML=`
-    <div class="card">
+    <div class="article-card">
       <h2>${a.Title}</h2>
       <p><b>Authors:</b> ${a.Authors}</p>
       <p><b>Journal:</b> ${a.Journal}</p>
