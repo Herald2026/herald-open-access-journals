@@ -26,18 +26,12 @@ document.getElementById("search").addEventListener("input", function () {
   const q = (this.value || "").toLowerCase().trim();
 
   currentRows = allData.filter(a => {
-    const title = (a.Title || "").toLowerCase();
-    const authors = (a.Authors || "").toLowerCase();
-    const journal = (a.Journal || "").toLowerCase();
-    const doi = (a.DOI || "").toLowerCase();
-    const year = String(a.Year || "");
-
     return (
-      title.includes(q) ||
-      authors.includes(q) ||
-      journal.includes(q) ||
-      doi.includes(q) ||
-      year.includes(q)
+      (a.Title || "").toLowerCase().includes(q) ||
+      (a.Authors || "").toLowerCase().includes(q) ||
+      (a.Journal || "").toLowerCase().includes(q) ||
+      (a.DOI || "").toLowerCase().includes(q) ||
+      String(a.Year || "").includes(q)
     );
   });
 
@@ -49,7 +43,8 @@ document.getElementById("search").addEventListener("input", function () {
    COUNT DISPLAY
 ========================= */
 function updateCount(txt) {
-  document.getElementById("count").innerText = txt;
+  const el = document.getElementById("count");
+  if (el) el.innerText = txt;
 }
 
 /* =========================
@@ -61,19 +56,28 @@ function setView(v) {
 }
 
 /* =========================
+   GET CLEAN ARTICLE ID
+========================= */
+function getArticleId(a) {
+  if (!a || !a.DOI) return "";
+
+  // Extract last part of DOI safely
+  return a.DOI.split("/").pop();
+}
+
+/* =========================
    MAIN RENDER FUNCTION
 ========================= */
 function show(rows) {
   if (!rows) rows = [];
 
+  const data = rows.slice(0, 100);
   let html = "";
 
-  const limit = 100;
-  const data = rows.slice(0, limit);
-
   if (currentView === "card") {
+
     data.forEach((a) => {
-      const id = a.id || a.DOI || "";
+      const id = getArticleId(a);
 
       html += `
         <div class="card">
@@ -91,7 +95,7 @@ function show(rows) {
             a.DOI
               ? `<p>
                   <a target="_blank" href="https://doi.org/${a.DOI}">
-                    ${a.DOI}
+                    DOI Link
                   </a>
                 </p>`
               : ""
@@ -99,7 +103,9 @@ function show(rows) {
         </div>
       `;
     });
+
   } else {
+
     html = `
       <table class="tbl">
         <tr>
@@ -112,7 +118,7 @@ function show(rows) {
     `;
 
     data.forEach((a) => {
-      const id = a.id || a.DOI || "";
+      const id = getArticleId(a);
 
       html += `
         <tr>
