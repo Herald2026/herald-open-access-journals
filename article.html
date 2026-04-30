@@ -4,81 +4,56 @@
 <meta charset="UTF-8">
 <title>Article</title>
 <link rel="stylesheet" href="style.css">
-
-<script>
-// Load JSON once
-let articles = [];
-
-fetch('articles.json')
-  .then(res => res.json())
-  .then(data => {
-    articles = data;
-    loadArticle();
-  });
-
-// Get ID from URL
-function getId() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("id");
-}
-
-function loadArticle() {
-  const id = getId();
-
-  const article = articles.find(a => {
-    const doi = a.DOI || "";
-    return doi.split("/").pop() === id;
-  });
-
-  if (!article) {
-    document.body.innerHTML = "<h2>Article not found</h2>";
-    return;
-  }
-
-  const title = article.Title || "";
-  const journal = article.Journal || "";
-  const year = article.Year || "";
-  const authors = article.Authors || "";
-  const doi = article.DOI || "";
-
-  document.title = title;
-
-  document.getElementById("content").innerHTML = `
-    <h1>${title}</h1>
-
-    <p><b>Authors:</b> ${authors}</p>
-    <p><b>Journal:</b> ${journal}</p>
-    <p><b>Year:</b> ${year}</p>
-    <p><b>DOI:</b> ${doi}</p>
-
-    <hr>
-
-    <h3>Access Article</h3>
-
-    <p>
-      <a href="https://doi.org/${doi}" target="_blank">🔗 DOI Link</a>
-    </p>
-
-    <p>
-      <a href="https://www.google.com/search?q=${encodeURIComponent(title)}" target="_blank">
-        🌐 Search Article
-      </a>
-    </p>
-  `;
-}
-</script>
-
 </head>
 
 <body>
 
-<header>
-  <h2>Herald Article</h2>
-</header>
+<div id="content">Loading...</div>
 
-<div id="content" style="padding:20px;">
-  Loading article...
-</div>
+<script>
+let data = [];
+
+fetch("articles.json")
+  .then(res => res.json())
+  .then(json => {
+    data = json;
+    load();
+  });
+
+function getId(){
+  const params = new URLSearchParams(window.location.search);
+  return params.get("id");
+}
+
+function load(){
+
+  const id = getId();
+
+  const article = data.find(a => (a.DOI || "").split("/").pop() === id);
+
+  if(!article){
+    document.body.innerHTML = "<h2>Article Not Found</h2>";
+    return;
+  }
+
+  document.title = article.Title;
+
+  document.getElementById("content").innerHTML = `
+    <h1>${article.Title}</h1>
+
+    <p><b>Authors:</b> ${article.Authors}</p>
+    <p><b>Journal:</b> ${article.Journal}</p>
+    <p><b>Year:</b> ${article.Year}</p>
+    <p><b>DOI:</b> ${article.DOI}</p>
+
+    <hr>
+
+    <a href="https://doi.org/${article.DOI}" target="_blank">
+      🔗 Open DOI
+    </a>
+  `;
+}
+</script>
 
 </body>
 </html>
