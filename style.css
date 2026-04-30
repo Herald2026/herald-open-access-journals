@@ -1,139 +1,67 @@
 body{
   margin:0;
-  background:#eef2f7;
+  background:#f3f6f1; /* soft green-tinted academic background */
   font-family: Georgia, "Times New Roman", serif;
-  color:#222;
+  color:#1f2a1f;
 }
 
-/* GLOBAL PADDING */
-.page{
-  padding:20px 60px;
-}
-
-@media(max-width:900px){
-  .page{
-    padding:15px 20px;
-  }
-}
-
-/* HEADER */
+/* HEADER stays same */
 .global-header{
   background:#0b3d91;
   color:white;
   padding:15px 20px;
-  position:sticky;
-  top:0;
-  z-index:1000;
 }
 
-.header-inner{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:8px;
-}
-
-.title{
-  font-size:20px;
-  font-weight:bold;
-}
-
-.submit-btn{
-  background:#ffcc00;
-  color:black;
-  padding:9px 14px;
-  border-radius:8px;
-  text-decoration:none;
-  font-weight:bold;
-}
-
-/* GRID */
-.container{
-  padding:20px 0;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:18px;
-}
-
-/* CARD */
+/* =========================
+   CARD (NOT WHITE / NOT GREY)
+========================= */
 .card{
-  background:#ffffff;
+  background:#f7faf6; /* soft green-white paper tone */
   border-radius:12px;
   padding:18px;
-  border:1px solid #d9e1ee;
-  border-left:5px solid #0b3d91;
+  border:1px solid #d7e5d7;
+  border-left:5px solid #2e7d32;
   box-shadow:0 4px 10px rgba(0,0,0,0.06);
   transition:0.2s;
-  min-height:140px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
 }
 
 .card:hover{
   transform:translateY(-3px);
-  box-shadow:0 10px 20px rgba(0,0,0,0.12);
+  box-shadow:0 8px 18px rgba(0,0,0,0.12);
 }
 
-/* BUTTON */
+/* =========================
+   BUTTONS (ALL GREEN)
+========================= */
 button{
-  background:#0b3d91;
+  background:#2e7d32;
   color:white;
   border:none;
   padding:8px 12px;
   border-radius:6px;
   cursor:pointer;
+  white-space:nowrap;
+  transition:0.2s;
 }
 
-/* SEARCH */
-.search{
-  width:100%;
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  margin:10px 0;
+button:hover{
+  background:#1b5e20;
 }
 
-/* JOURNAL PAGE LAYOUT */
-.journal-layout{
-  display:grid;
-  grid-template-columns:220px 1fr;
-  gap:20px;
+/* =========================
+   TEXT HIGHLIGHT GREEN
+========================= */
+.highlight{
+  color:#2e7d32;
+  font-weight:bold;
 }
 
-.year-box{
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  border:1px solid #d9e1ee;
-  height:fit-content;
+/* LINKS */
+a{
+  color:#2e7d32;
+  text-decoration:none;
 }
 
-.year-box button{
-  width:100%;
-  margin:6px 0;
-}
-
-/* ARTICLE PAGE */
-.article-box{
-  max-width:800px;
-  margin:auto;
-}
-
-.article-card{
-  background:white;
-  padding:20px;
-  border-radius:12px;
-  border:1px solid #d9e1ee;
-  box-shadow:0 4px 10px rgba(0,0,0,0.06);
-}
-
-/* RESPONSIVE */
-@media(max-width:1000px){
-  .container{ grid-template-columns:repeat(2,1fr); }
-}
-
-@media(max-width:700px){
-  .container{ grid-template-columns:1fr; }
-  .journal-layout{ grid-template-columns:1fr; }
+a:hover{
+  text-decoration:underline;
 }
