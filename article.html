@@ -5,107 +5,199 @@
 <title>Article</title>
 <link rel="stylesheet" href="style.css">
 
-<meta name="citation_title" content="">
-<meta name="citation_author" content="">
-<meta name="citation_journal_title" content="">
-<meta name="citation_publication_date" content="">
-<meta name="citation_doi" content="">
+<style>
+body{
+  margin:0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:#f5f7fb;
+  color:#222;
+}
 
-<script type="application/ld+json">
-{}
-</script>
+/* HEADER */
+header{
+  background:#0b3d91;
+  color:white;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.back-btn{
+  background:white;
+  color:#0b3d91;
+  padding:8px 12px;
+  border-radius:6px;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+/* MAIN CARD */
+.container{
+  max-width:900px;
+  margin:20px auto;
+  padding:20px;
+}
+
+.paper{
+  background:white;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 4px 18px rgba(0,0,0,0.08);
+}
+
+/* TITLE */
+h1{
+  font-size:24px;
+  margin-bottom:10px;
+  color:#111;
+}
+
+/* META */
+.meta{
+  color:#555;
+  font-size:14px;
+  margin-bottom:15px;
+  line-height:1.6;
+}
+
+/* ABSTRACT BOX */
+.abstract{
+  background:#f0f4ff;
+  padding:15px;
+  border-left:4px solid #0b3d91;
+  border-radius:6px;
+  margin:15px 0;
+}
+
+/* BUTTONS */
+.actions{
+  margin-top:20px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  padding:10px 14px;
+  border-radius:6px;
+  text-decoration:none;
+  font-weight:bold;
+  font-size:14px;
+}
+
+.doi{
+  background:#0b3d91;
+  color:white;
+}
+
+.scholar{
+  background:#1a73e8;
+  color:white;
+}
+
+.pdf{
+  background:#e53935;
+  color:white;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .paper{
+    padding:15px;
+  }
+}
+</style>
 
 </head>
 
 <body>
 
-<div id="content">Loading...</div>
+<header>
+  <a class="back-btn" href="javascript:history.back()">← Back</a>
+  <div>Herald Open Access Journals</div>
+</header>
+
+<div class="container">
+  <div id="content" class="paper">Loading...</div>
+</div>
 
 <script>
-let data = [];
+
+let data=[];
 
 fetch("articles.json")
-  .then(res => res.json())
-  .then(json => {
-    data = json;
-    load();
-  });
+.then(r=>r.json())
+.then(json=>{
+  data=json;
+  load();
+});
 
 function getId(){
   return new URLSearchParams(window.location.search).get("id");
 }
 
-function setMeta(name, value){
-  const tag = document.querySelector(`meta[name="${name}"]`);
-  if(tag) tag.setAttribute("content", value || "");
-}
-
 function load(){
 
-  const id = getId();
+  const id=getId();
 
-  const article = data.find(a =>
-    (a.DOI || "").split("/").pop() === id
-  );
+  const a=data.find(x=>(x.DOI||"").split("/").pop()===id);
 
-  if(!article){
-    document.body.innerHTML = "<h2>Article Not Found</h2>";
+  if(!a){
+    document.getElementById("content").innerHTML="<h2>Article Not Found</h2>";
     return;
   }
 
-  document.title = article.Title;
+  document.title=a.Title;
 
-  // META TAGS (GOOGLE SCHOLAR)
-  setMeta("citation_title", article.Title);
-  setMeta("citation_author", article.Authors);
-  setMeta("citation_journal_title", article.Journal);
-  setMeta("citation_publication_date", article.Year);
-  setMeta("citation_doi", article.DOI);
+  const abstractText =
+    "This article titled '" + a.Title +
+    "' authored by " + a.Authors +
+    " is published in " + a.Journal +
+    " (" + a.Year + "). It contributes to academic research in this field.";
 
-  // JSON-LD (SEO)
-  document.querySelector('script[type="application/ld+json"]').textContent =
-  JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "ScholarlyArticle",
-    "headline": article.Title,
-    "author": {
-      "@type": "Person",
-      "name": article.Authors
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Herald Open Access Journals"
-    },
-    "datePublished": article.Year,
-    "identifier": {
-      "@type": "PropertyValue",
-      "propertyID": "DOI",
-      "value": article.DOI
-    }
-  });
+  document.getElementById("content").innerHTML=`
+    
+    <h1>${a.Title}</h1>
 
-  document.getElementById("content").innerHTML = `
-    <h1>${article.Title}</h1>
+    <div class="meta">
+      <p><b>Authors:</b> ${a.Authors}</p>
+      <p><b>Journal:</b> ${a.Journal}</p>
+      <p><b>Year:</b> ${a.Year}</p>
+      <p><b>DOI:</b> ${a.DOI}</p>
+    </div>
 
-    <p><b>Authors:</b> ${article.Authors}</p>
-    <p><b>Journal:</b> ${article.Journal}</p>
-    <p><b>Year:</b> ${article.Year}</p>
-    <p><b>DOI:</b> ${article.DOI}</p>
+    <div class="abstract">
+      <b>Abstract</b>
+      <p>${abstractText}</p>
+    </div>
 
-    <hr>
+    <div class="actions">
 
-    <a target="_blank" href="https://doi.org/${article.DOI}">
-      🔗 Open DOI
-    </a>
+      <a class="btn doi" target="_blank"
+         href="https://doi.org/${a.DOI}">
+        🔗 Open DOI
+      </a>
 
-    <br><br>
+      <a class="btn scholar" target="_blank"
+         href="https://scholar.google.com/scholar?q=${encodeURIComponent(a.Title)}">
+        📚 Google Scholar
+      </a>
 
-    <a target="_blank"
-       href="https://scholar.google.com/scholar?q=${encodeURIComponent(article.Title)}">
-      📚 Google Scholar Search
-    </a>
+      ${
+        a.HTML_URL
+        ? `<a class="btn pdf" target="_blank" href="${a.HTML_URL}">
+            📄 Publisher Page
+          </a>`
+        : ""
+      }
+
+    </div>
+
   `;
 }
+
 </script>
 
 </body>
