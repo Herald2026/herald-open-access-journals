@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://herald2026.github.io/herald-open-access-journals/sitemap.xml
