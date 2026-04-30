@@ -13,7 +13,7 @@
     <div class="title" id="title">Journal</div>
 
     <a class="submit-btn" target="_blank"
-       href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript">
+       href="https://www.heraldopenaccess.us/submit-manuscript">
       📄 Submit Manuscript
     </a>
   </div>
@@ -23,15 +23,14 @@
 
 <div class="journal-layout">
 
+  <!-- LEFT YEAR -->
   <div class="year-box">
     <h3>Years</h3>
     <div id="years"></div>
   </div>
 
-  <div>
-    <input class="search" id="searchBox" placeholder="Search articles...">
-    <div class="container" id="articles"></div>
-  </div>
+  <!-- RIGHT SINGLE COLUMN -->
+  <div id="articles" class="single-column"></div>
 
 </div>
 
@@ -74,19 +73,7 @@ function filter(y){
   render(all.filter(a=>a.Year==y));
 }
 
-document.getElementById("searchBox").addEventListener("input",function(){
-
-  const q=this.value.toLowerCase();
-
-  const f=all.filter(a=>
-    (a.Title||"").toLowerCase().includes(q) ||
-    (a.Authors||"").toLowerCase().includes(q)
-  );
-
-  render(f);
-
-});
-
+/* 🔥 SINGLE COLUMN RENDER FIX */
 function render(list){
 
   const c=document.getElementById("articles");
@@ -97,15 +84,12 @@ function render(list){
     const id=(a.DOI||"").split("/").pop();
 
     c.innerHTML+=`
-      <div class="card">
+      <div class="article-card">
 
         <h3>${a.Title}</h3>
 
-        <p>${a.Authors}</p>
-
-        <p>${a.Year}</p>
-
-        <p>${(a.Title||"").slice(0,90)}...</p>
+        <p><b>Authors:</b> ${a.Authors}</p>
+        <p><b>Year:</b> ${a.Year}</p>
 
         <button onclick="openA('${id}')">Open Article</button>
 
