@@ -4,55 +4,214 @@
 <meta charset="UTF-8">
 <title>Journal Articles</title>
 <link rel="stylesheet" href="style.css">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* HEADER */
+header {
+  background: #0b3d91;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+}
+
+/* SUBMIT BUTTON */
+.submit-btn {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  background: #ffcc00;
+  color: black;
+  padding: 10px 15px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.submit-btn:hover {
+  background: #ffdb4d;
+}
+
+/* LAYOUT */
+.container {
+  display: flex;
+}
+
+/* LEFT YEAR PANEL */
+.year-panel {
+  width: 200px;
+  background: #f4f6f9;
+  padding: 15px;
+  height: 100vh;
+  overflow-y: auto;
+  border-right: 1px solid #ddd;
+}
+
+.year-btn {
+  display: block;
+  margin: 5px 0;
+  padding: 8px;
+  background: white;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.year-btn:hover {
+  background: #0b3d91;
+  color: white;
+}
+
+/* RIGHT CONTENT */
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+/* ARTICLE CARD */
+.card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  background: white;
+}
+
+.card h4 {
+  margin: 0 0 8px 0;
+}
+</style>
+
 </head>
 
 <body>
 
-<h2 id="title"></h2>
-<div id="list"></div>
+<header>
+  <h2 id="journalTitle">Journal</h2>
+
+  <!-- SUBMIT BUTTON -->
+  <a class="submit-btn"
+     href="https://www.heraldopenaccess.us/journals/journal-of-psychiatry-depression-anxiety/submit-manuscript"
+     target="_blank">
+    📄 Submit Your Manuscript
+  </a>
+</header>
+
+<div class="container">
+
+  <!-- LEFT YEAR PANEL -->
+  <div class="year-panel">
+    <h3>Years</h3>
+    <div id="yearList"></div>
+  </div>
+
+  <!-- RIGHT CONTENT -->
+  <div class="content">
+    <div id="articleList"></div>
+  </div>
+
+</div>
 
 <script>
+
 const journal = localStorage.getItem("journal") || "";
-document.getElementById("title").innerText = journal;
+document.getElementById("journalTitle").innerText = journal;
+
+let allArticles = [];
 
 fetch("articles.json")
   .then(res => res.json())
   .then(data => {
 
-    const filtered = data.filter(a =>
+    allArticles = data.filter(a =>
       (a.Journal || "").trim() === journal.trim()
     );
 
-    const container = document.getElementById("list");
+    allArticles.sort((a,b) => b.Year - a.Year);
 
-    if (!filtered.length) {
-      container.innerHTML = "<p>No articles found</p>";
-      return;
-    }
-
-    filtered.forEach(a => {
-
-      const id = (a.DOI || "").split("/").pop();
-
-      const div = document.createElement("div");
-
-      div.innerHTML = `
-        <h4>${a.Title}</h4>
-        <p>${a.Year}</p>
-
-        <button onclick="openArticle('${id}')">
-          Open Article
-        </button>
-      `;
-
-      container.appendChild(div);
-    });
-
+    buildYears(allArticles);
+    render(allArticles);
   });
 
+/* =========================
+   BUILD YEAR FILTER
+========================= */
+function buildYears(data){
+
+  const years = [...new Set(data.map(a => a.Year))].sort((a,b)=>b-a);
+
+  let html = `
+    <button class="year-btn" onclick="render(allArticles)">
+      All Years
+    </button>
+  `;
+
+  years.forEach(y => {
+    html += `
+      <button class="year-btn" onclick="filterYear(${y})">
+        ${y}
+      </button>
+    `;
+  });
+
+  document.getElementById("yearList").innerHTML = html;
+}
+
+/* =========================
+   FILTER BY YEAR
+========================= */
+function filterYear(year){
+  const filtered = allArticles.filter(a => a.Year == year);
+  render(filtered);
+}
+
+/* =========================
+   RENDER ARTICLES
+========================= */
+function render(list){
+
+  const container = document.getElementById("articleList");
+  container.innerHTML = "";
+
+  if(!list.length){
+    container.innerHTML = "<p>No articles found</p>";
+    return;
+  }
+
+  list.forEach(a => {
+
+    const id = (a.DOI || "").split("/").pop();
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <h4>${a.Title}</h4>
+      <p><b>Year:</b> ${a.Year}</p>
+      <p><b>Authors:</b> ${a.Authors}</p>
+
+      <button onclick="openArticle('${id}')">
+        Open Article
+      </button>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+/* =========================
+   OPEN ARTICLE
+========================= */
 function openArticle(id){
   window.location.href = "article.html?id=" + id;
 }
+
 </script>
 
 </body>
