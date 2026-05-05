@@ -85,13 +85,13 @@ button{
 .year-box{
   background:#f4f8f2;
   border:2px solid #2e7d32;
-  padding:15px;
+  padding:10px;
   border-radius:12px;
 }
 
 .year-box button{
   width:70%;
-  margin:6px 0;
+  margin:2px 0;
 }
 
 /* ================= RIGHT SIDE = SINGLE COLUMN ONLY ================= */
