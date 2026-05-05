@@ -29,13 +29,13 @@ body{
 }
 
 .title{
-  font-size:30px;
+  font-size:32px;
   font-weight:800;
 }
 
 /* SUBMIT BUTTON */
 .submit-btn{
-  background:#ffcc00;
+  background:#f27933;
   color:black;
   padding:12px 18px;
   font-size:18px;
@@ -90,7 +90,7 @@ button{
 }
 
 .year-box button{
-  width:100%;
+  width:70%;
   margin:6px 0;
 }
 
